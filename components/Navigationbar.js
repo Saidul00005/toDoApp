@@ -2,9 +2,11 @@
 import React from "react";
 import { Navbar, NavbarBrand, NavbarContent, NavbarItem, NavbarMenuToggle, NavbarMenu, NavbarMenuItem, Link, Button } from "@nextui-org/react";
 import { ThemeSwitcher } from "./ThemeSwitcher";
+import { usePathname } from "next/navigation";
 
 export default function Navigationbar() {
   const [isMenuOpen, setIsMenuOpen] = React.useState(false);
+  const pathname = usePathname()
 
   const menuItems = [
     "Profile",
@@ -36,28 +38,30 @@ export default function Navigationbar() {
       </NavbarContent>
 
       <NavbarContent className="hidden sm:flex gap-4" justify="center">
-        <NavbarItem>
-          <Link color="foreground" href="/toDoList">
+        <NavbarItem isActive={pathname === '/toDoList'}>
+          <Link color={pathname === '/toDoList' ? '' : "foreground"} href="/toDoList" aria-current={pathname === '/toDoList' ? 'page' : ""}>
             To do items list
           </Link>
         </NavbarItem>
-        <NavbarItem isActive>
-          <Link href="/addNewItem" aria-current="page">
+        <NavbarItem isActive={pathname === '/addNewItem'}>
+          <Link color={pathname === '/addNewItem' ? '' : "foreground"} href="/addNewItem" aria-current={pathname === '/addNewItem' ? 'page' : ""}>
             Add new item
           </Link>
         </NavbarItem>
-        <NavbarItem>
-          <Link color="foreground" href="/history">
+        <NavbarItem isActive={pathname === '/history'}>
+          <Link color={pathname === '/history' ? '' : "foreground"} href="/history" aria-current={pathname === '/history' ? 'page' : ""}>
             History
           </Link>
         </NavbarItem>
       </NavbarContent>
       <NavbarContent justify="end">
         <NavbarItem className="hidden lg:flex">
-          <Link href="#">Login</Link>
+          <Button as={Link} href="#" variant="flat">
+            Login
+          </Button>
         </NavbarItem>
         <NavbarItem className="hidden lg:flex">
-          <Button as={Link} color="primary" href="#" variant="flat">
+          <Button as={Link} href="#" variant="flat">
             Sign Up
           </Button>
         </NavbarItem>
@@ -81,6 +85,6 @@ export default function Navigationbar() {
           </NavbarMenuItem>
         ))}
       </NavbarMenu>
-    </Navbar>
+    </Navbar >
   );
 }
