@@ -16,6 +16,7 @@ const AddNewItemForm = () => {
       toDoDescription: descriptionRef.current.value,
       toDoACT: ACTRef.current.value,
       toDoStatus: 'Pending',
+      toDoCreationDate: new Date().toISOString(),
     }
 
     try {
