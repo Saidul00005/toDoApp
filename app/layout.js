@@ -3,6 +3,7 @@ import "./globals.css";
 import Navigationbar from "@/components/Navigationbar";
 import Footer from "@/components/Footer";
 import { Providers } from "./providers";
+import ReduxProvider from "./redux/reduxProvider";
 
 const roboto = Roboto({
   weight: ['400', '700'],
@@ -23,11 +24,11 @@ export default function RootLayout({ children }) {
         <Providers>
 
           <Navigationbar />
-
-          <main>
-            {children}
-          </main>
-
+          <ReduxProvider>
+            <main>
+              {children}
+            </main>
+          </ReduxProvider>
           <Footer />
 
         </Providers>

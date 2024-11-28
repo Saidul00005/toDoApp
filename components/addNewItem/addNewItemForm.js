@@ -1,8 +1,13 @@
 'use client';
 
 import { useRef } from 'react';
+import { useDispatch } from 'react-redux'
+import { addToDo } from '@/app/redux/slices/toDoSlice'
 
 const AddNewItemForm = () => {
+
+  const dispatch = useDispatch()
+
 
   const nameRef = useRef();
   const descriptionRef = useRef();
@@ -19,27 +24,13 @@ const AddNewItemForm = () => {
       toDoCreationDate: new Date().toISOString(),
     }
 
-    try {
+    dispatch(addToDo(toDoItemData))
 
-      const response = await fetch('/api/addToDo', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify(toDoItemData),
-      });
+    nameRef.current.value = '';
+    descriptionRef.current.value = '';
+    ACTRef.current.value = '';
+  }
 
-      if (!response.ok) {
-        throw new Error('Failed to add to-do item');
-      }
-
-      nameRef.current.value = '';
-      descriptionRef.current.value = '';
-      ACTRef.current.value = '';
-    } catch (error) {
-      console.error('Error adding to-do item:', error.message);
-    }
-  };
 
   return (
     <form
@@ -107,7 +98,7 @@ const AddNewItemForm = () => {
         Add
       </button>
     </form>
-  );
+  )
 };
 
 export default AddNewItemForm;
