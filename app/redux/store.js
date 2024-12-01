@@ -3,6 +3,6 @@ import toDoReducer from "@/app/redux/slices/toDoSlice"
 
 export const store = configureStore({
   reducer: {
-    todos: toDoReducer,
+    toDos: toDoReducer,
   }
 })

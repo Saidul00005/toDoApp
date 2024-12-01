@@ -9,7 +9,7 @@ export async function POST(req) {
       return NextResponse.json({ error: 'Invalid data' }, { status: 400 });
     }
 
-    //console.log('Received data:', body);
+    // console.log('Received data:', body);
 
     const response = await fetch('http://localhost:3001/addToDo', {
       method: 'POST',
