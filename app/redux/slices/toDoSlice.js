@@ -6,7 +6,7 @@ export const fetchToDos = createAsyncThunk('/toDoList', async () => {
     throw new Error('Failed to fetch todos');
   }
   const result = await response.json()
-  //console.log('Fetched ToDos from Api:', result.data.data);
+  // console.log('Fetched ToDos from Api:', result.data.data);
   return result.data.data
 })
 
@@ -19,8 +19,8 @@ export const addToDo = createAsyncThunk('/addNewItem', async (newToDo) => {
     },
     body: JSON.stringify(newToDo),
   });
-
-  return await response.json();
+  const result = await response.json();
+  return result.data.data;
 })
 
 export const editToDo = createAsyncThunk('/editToDo', async ({ id, updatedToDo }) => {
@@ -30,7 +30,8 @@ export const editToDo = createAsyncThunk('/editToDo', async ({ id, updatedToDo }
     body: JSON.stringify(updatedToDo),
   });
   const result = await response.json();
-  return { id, updatedToDo: result };
+  //console.log("Updated items:", result.data.data)
+  return { id, updatedToDo: result.data.data };
 });
 
 export const deleteToDo = createAsyncThunk('/deleteToDo', async (id) => {
@@ -59,9 +60,9 @@ const toDoSlice = createSlice({
     }).addCase(addToDo.fulfilled, (state, action) => {
       state.items.push(action.payload); // Add the new todo
     }).addCase(editToDo.fulfilled, (state, action) => {
-      const index = state.items.findIndex((item) => item._id !== action.payload.id);
+      const index = state.items.findIndex((item) => item._id === action.payload.id);
       if (index !== -1) {
-        state.items[index] = { ...state.items[index], ...action.payload.updatedToDo }
+        state.items[index] = action.payload.updatedToDo
       }
     }).addCase(deleteToDo.fulfilled, (state, action) => {
       state.items = state.items.filter((item) => item._id !== action.payload.id)

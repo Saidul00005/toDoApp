@@ -3,17 +3,18 @@ import React, { useEffect, useState } from 'react'
 import ToDoItem from '@/components/toDoList/toDoItem'
 import { useDispatch, useSelector } from 'react-redux'
 import { fetchToDos, selectToDos } from '@/app/redux/slices/toDoSlice'
-import { Grid, Container, Text } from '@nextui-org/react';
 
 const page = () => {
   const dispatch = useDispatch()
   const toDos = useSelector(selectToDos)
 
   useEffect(() => {
-    dispatch(fetchToDos())
-  }, [dispatch])
+    if (toDos.length === 0) {
+      dispatch(fetchToDos())
+    }
+  }, [dispatch, toDos.length])
 
-  // console.log("Fetched ToDos: ", toDos);
+  //console.log("Fetched ToDos: ", toDos);
 
   return (
     <>
@@ -26,6 +27,7 @@ const page = () => {
           toDos.map((toDo, index) => (
             <ToDoItem
               key={index}
+              id={toDo._id}
               name={toDo.toDoName}
               description={toDo.toDoDescription}
               status={toDo.toDoStatus}

@@ -1,8 +1,9 @@
 import React from 'react'
-import { Card, CardHeader, CardBody, CardFooter, Divider, Link } from "@nextui-org/react";
+import Link from 'next/link'
+import { Card, CardHeader, CardBody, CardFooter, Divider } from "@nextui-org/react";
 import { Button } from "@nextui-org/react";
 
-const ToDoItem = ({ name, description, status, act, creationDate }) => {
+const ToDoItem = ({ id, name, description, status, act, creationDate }) => {
   const formattedCreationDate = new Date(creationDate).toLocaleString('en-US', {
     year: 'numeric',
     month: 'long',
@@ -47,7 +48,7 @@ const ToDoItem = ({ name, description, status, act, creationDate }) => {
         <Divider />
         <CardFooter>
           <Link
-            href=""
+            href={`/editToDo/${id}`}
           >
             <Button size="sm" color='secondary'>Edit</Button>
 

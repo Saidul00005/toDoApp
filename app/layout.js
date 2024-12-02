@@ -22,15 +22,13 @@ export default function RootLayout({ children }) {
         className={`${roboto.className} antialiased`}
       >
         <Providers>
-
-          <Navigationbar />
           <ReduxProvider>
+            <Navigationbar />
             <main>
               {children}
             </main>
+            <Footer />
           </ReduxProvider>
-          <Footer />
-
         </Providers>
       </body>
     </html >

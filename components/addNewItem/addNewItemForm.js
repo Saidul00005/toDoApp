@@ -24,6 +24,7 @@ const AddNewItemForm = () => {
       toDoCreationDate: new Date().toISOString(),
     }
 
+    //console.log('Submitting ToDo:', toDoItemData); 
     dispatch(addToDo(toDoItemData))
 
     nameRef.current.value = '';
