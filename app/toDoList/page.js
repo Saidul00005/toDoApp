@@ -1,5 +1,5 @@
 'use client'
-import React, { useEffect, useState } from 'react'
+import React, { useEffect } from 'react'
 import ToDoItem from '@/components/toDoList/toDoItem'
 import { useDispatch, useSelector } from 'react-redux'
 import { fetchToDos, selectToDos } from '@/app/redux/slices/toDoSlice'
@@ -33,6 +33,7 @@ const page = () => {
               status={toDo.toDoStatus}
               act={toDo.toDoACT}
               creationDate={toDo.toDoCreationDate}
+              editionDate={toDo.toDoEditionDate}
             />
           )
           )) : (

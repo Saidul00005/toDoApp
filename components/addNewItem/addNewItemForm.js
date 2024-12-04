@@ -26,6 +26,7 @@ const AddNewItemForm = () => {
 
     //console.log('Submitting ToDo:', toDoItemData); 
     dispatch(addToDo(toDoItemData))
+    window.alert('To-Do item submitted successfully!')
 
     nameRef.current.value = '';
     descriptionRef.current.value = '';
