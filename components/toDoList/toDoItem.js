@@ -1,73 +1,10 @@
-import React from 'react'
-import { useEffect, useReducer } from 'react'
-import { useSelector, useDispatch } from 'react-redux'
-import { editToDo, selectToDos, fetchToDos } from '@/app/redux/slices/toDoSlice'
-import Link from 'next/link'
-import { Card, CardHeader, CardBody, CardFooter, Divider } from "@nextui-org/react";
-import { Modal, ModalContent, ModalHeader, ModalBody, ModalFooter, Button, useDisclosure, Input, Textarea } from "@nextui-org/react";
-
-const initialFormState = {
-  toDoName: '',
-  toDoDescription: '',
-  toDoACT: '',
-};
-
-const formReducer = (state, action) => {
-  switch (action.type) {
-    case 'SET_FIELD':
-      return {
-        ...state,
-        [action.field]: action.value,
-      };
-    case 'SET_FORM':
-      return {
-        ...state,
-        ...action.payload,
-      };
-    case 'RESET_FORM':
-      return initialFormState;
-    default:
-      return state;
-  }
-};
-
+import React from 'react';
+import { Card, CardHeader, CardBody, CardFooter, Divider, Button } from "@nextui-org/react";
+import ToDoStatusChange from './toDoStatusChange';
+import ToDoEdit from './toDoEdit';
+import ToDoDelete from './toDoDelete';
 
 const ToDoItem = ({ id, name, description, status, act, creationDate, editionDate }) => {
-  const { isOpen, onOpen, onOpenChange, onClose } = useDisclosure();
-
-  const dispatch = useDispatch();
-  const toDos = useSelector(selectToDos);
-
-  const [formState, formDispatch] = useReducer(formReducer, initialFormState);
-
-  const toDoItem = toDos.find((item) => item._id === id);
-
-  useEffect(() => {
-    if (toDoItem) {
-      const localDate = new Date(toDoItem.toDoACT);
-      const formattedDate = localDate.toLocaleString('en-CA', {
-        year: 'numeric',
-        month: '2-digit',
-        day: '2-digit',
-        hour: '2-digit',
-        minute: '2-digit',
-        hour12: false,
-      }).replace(',', '');
-
-      const toDoACT = formattedDate.replace(' ', 'T');
-
-      formDispatch({
-        type: 'SET_FORM',
-        payload: {
-          toDoName: toDoItem.toDoName,
-          toDoDescription: toDoItem.toDoDescription,
-          toDoACT: toDoACT,
-        }
-      });
-    }
-  }, [toDoItem]);
-
-
 
   const formattedCreationDate = new Date(creationDate).toLocaleString('en-US', {
     year: 'numeric',
@@ -95,19 +32,7 @@ const ToDoItem = ({ id, name, description, status, act, creationDate, editionDat
     hour12: true,
   });
 
-  const handleSubmit = async (e) => {
-    const updatedToDo = {
-      toDoName: formState.toDoName,
-      toDoDescription: formState.toDoDescription,
-      toDoACT: formState.toDoACT,
-      toDoStatus: "Pending",
-      toDoCreationDate: toDoItem.toDoCreationDate,
-      toDoEditionDate: new Date().toISOString(),
-    };
-
-    await dispatch(editToDo({ id, updatedToDo })).unwrap();
-    onClose();
-  }
+  const isDeadlineOver = new Date() > new Date(act);
 
   return (
     <>
@@ -129,82 +54,31 @@ const ToDoItem = ({ id, name, description, status, act, creationDate, editionDat
           </div>
           <div className='py-1'>
             <p className="text-tiny uppercase font-bold">Status</p>
-            <p><Button size="sm" color={status === 'Pending' ? 'warning' : 'default'} variant="flat">{status}</Button></p>
+            <p><Button size="sm" color={status === 'Pending' ? 'warning' : status === 'Completed' ? 'success' : 'default'} variant="flat">{status}</Button></p>
           </div>
           <div className='py-1'>
             <p className="text-tiny uppercase font-bold">Assumptive completion time</p>
-            <p>{formattedActDate}</p>
+            <p className={isDeadlineOver ? 'text-red-500 font-bold' : ''}>
+              {isDeadlineOver ? 'Deadline over' : formattedActDate}
+            </p>
           </div>
         </CardBody>
         <Divider />
         <CardFooter>
-          <Button size="sm" color='secondary' onPress={onOpen}>Edit</Button>
-          <Link
-            href=""
-            className='px-1'
-          >
-            <Button size="sm" color='warning'>Delete</Button>
-          </Link>
+          <div className="flex gap-1 items-center">
+            <ToDoEdit id={id} name={name} description={description} status={status} act={act} creationDate={creationDate} editionDate={editionDate} />
 
-          <Link
-            href=""
-            className='px-1'
-          >
-            <Button size="sm" color='warning'>Mark as Completed</Button>
-          </Link>
+            <ToDoDelete id={id} toDoStatus={status} />
+
+            <ToDoStatusChange id={id} toDoStatus={status} />
+          </div>
+
         </CardFooter>
-      </Card>
+      </Card >
 
-      <>
-        <Modal isOpen={isOpen} onOpenChange={onOpenChange}>
-          <ModalContent>
-            <>
-              <ModalHeader className="flex flex-col gap-1">Update To-Do</ModalHeader>
-              <ModalBody>
-                <Input
-                  label="To-Do Name"
-                  value={formState.toDoName}
-                  onChange={(e) => {
-                    formDispatch({ type: 'SET_FIELD', field: 'toDoName', value: e.target.value })
-                  }
-                  }
-                  required
-                />
-                <Textarea
-                  label="Description"
-                  value={formState.toDoDescription}
-                  onChange={(e) => {
-                    formDispatch({ type: 'SET_FIELD', field: 'toDoDescription', value: e.target.value })
-                  }
-                  }
-                  required
-                />
-                <Input
-                  label="Assumptive Completion Time"
-                  type="datetime-local"
-                  value={formState.toDoACT}
-                  onChange={(e) => {
-                    formDispatch({ type: 'SET_FIELD', field: 'toDoACT', value: e.target.value })
-                  }
-                  }
-                  required
-                />
-              </ModalBody>
-              <ModalFooter>
-                <Button color="danger" variant="light" onPress={onClose}>
-                  Close
-                </Button>
-                <Button color="primary" onPress={handleSubmit}>
-                  Update
-                </Button>
-              </ModalFooter>
-            </>
-          </ModalContent>
-        </Modal>
-      </>
 
     </>
   )
 }
 
-export default ToDoItem
+export default ToDoItem;

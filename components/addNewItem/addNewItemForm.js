@@ -1,13 +1,14 @@
 'use client';
 
 import { useRef } from 'react';
-import { useDispatch } from 'react-redux'
-import { addToDo } from '@/app/redux/slices/toDoSlice'
+import { useDispatch } from 'react-redux';
+import { addToDo } from '@/app/redux/slices/toDoSlice';
+import { Input } from "@nextui-org/input";
+import { Textarea } from "@nextui-org/input";
+import { Button } from "@nextui-org/react";
 
 const AddNewItemForm = () => {
-
-  const dispatch = useDispatch()
-
+  const dispatch = useDispatch();
 
   const nameRef = useRef();
   const descriptionRef = useRef();
@@ -22,17 +23,15 @@ const AddNewItemForm = () => {
       toDoACT: ACTRef.current.value,
       toDoStatus: 'Pending',
       toDoCreationDate: new Date().toISOString(),
-    }
+    };
 
-    //console.log('Submitting ToDo:', toDoItemData); 
-    dispatch(addToDo(toDoItemData))
-    window.alert('To-Do item submitted successfully!')
+    dispatch(addToDo(toDoItemData));
+    window.alert('To-Do item submitted successfully!');
 
     nameRef.current.value = '';
     descriptionRef.current.value = '';
     ACTRef.current.value = '';
-  }
-
+  };
 
   return (
     <form
@@ -40,67 +39,50 @@ const AddNewItemForm = () => {
       className="flex flex-col space-y-4 px-4 py-6 max-w-md mx-auto bg-white dark:bg-gray-800 rounded shadow-md"
     >
       {/* To-Do Name */}
-      <div>
-        <label
-          htmlFor="toDoName"
-          className="block text-sm font-medium mb-1 text-gray-800 dark:text-gray-200"
-        >
-          To Do Name:<span className="text-red-500">*</span>
-        </label>
-        <input
-          id="toDoName"
-          type="text"
-          ref={nameRef}
-          className="w-full border border-gray-300 dark:border-gray-600 rounded p-2 bg-gray-50 dark:bg-gray-700 text-gray-900 dark:text-gray-100"
-          placeholder="Enter to-do name"
-          required
-        />
+      <div className="flex w-full flex-wrap md:flex-nowrap gap-4">
+        <Input label="To Do Name" placeholder="Enter to-do name" isRequired ref={nameRef} id="toDoName" />
       </div>
 
       {/* To-Do Description */}
       <div>
-        <label
-          htmlFor="toDoDescription"
-          className="block text-sm font-medium mb-1 text-gray-800 dark:text-gray-200"
-        >
-          To Do Description:<span className="text-red-500">*</span>
-        </label>
-        <textarea
+        <Textarea
           id="toDoDescription"
-          ref={descriptionRef}
-          className="w-full border border-gray-300 dark:border-gray-600 rounded p-2 bg-gray-50 dark:bg-gray-700 text-gray-900 dark:text-gray-100"
+          label="Description"
           placeholder="Enter to-do description"
-          rows="4"
-          required
-        ></textarea>
+          isRequired
+          ref={descriptionRef}
+          disableAnimation
+          disableAutosize
+          classNames={{
+            base: "col-span-12 md:col-span-6 mb-6 md:mb-0",
+            input: "resize-y min-h-[40px]",
+          }}
+        />
       </div>
 
       {/* Deadline Date and Time */}
-      <div>
+      <div className="flex flex-col">
         <label
           htmlFor="toDoACT"
-          className="block text-sm font-medium mb-1 text-gray-800 dark:text-gray-200"
+          className="block text-xs font-medium mb-2 text-gray-800 dark:text-gray-200"
         >
-          Assumptive completion time:<span className="text-red-500">*</span>
+          Assumptive Completion Time:<span className="text-red-500"> *</span>
         </label>
         <input
           id="toDoACT"
           type="datetime-local"
           ref={ACTRef}
-          className="w-full border border-gray-300 dark:border-gray-600 rounded p-2 bg-gray-50 dark:bg-gray-700 text-gray-900 dark:text-gray-100"
+          className="w-full border border-gray-300 dark:border-gray-600 rounded-lg p-2 bg-gray-50 dark:bg-gray-700 text-gray-900 dark:text-gray-100 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition duration-300"
           required
         />
       </div>
 
       {/* Submit Button */}
-      <button
-        type="submit"
-        className="bg-blue-500 dark:bg-blue-600 text-white py-2 px-4 rounded hover:bg-blue-600 dark:hover:bg-blue-700"
-      >
-        Add
-      </button>
+      <Button color="success" variant="solid" type="submit" size="sm" radius="full">
+        Submit
+      </Button>
     </form>
-  )
+  );
 };
 
 export default AddNewItemForm;

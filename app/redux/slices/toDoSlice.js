@@ -34,6 +34,18 @@ export const editToDo = createAsyncThunk('/editToDo', async ({ id, updatedToDo }
   return { id, updatedToDo: result.data.data };
 });
 
+export const editToDoStatus = createAsyncThunk('/editToDoStatus', async ({ id, updatedToDo }) => {
+  console.log("From thunk", id, updatedToDo)
+  const response = await fetch(`/api/editToDoStatus/${id}`, {
+    method: 'PATCH',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify(updatedToDo),
+  });
+  const result = await response.json();
+  return { id, updatedToDo: result.data.data };
+});
+
+
 export const deleteToDo = createAsyncThunk('/deleteToDo', async (id) => {
   await fetch(`/api/deleteToDo/${id}`, { method: 'DELETE' });
   return id;
@@ -64,8 +76,16 @@ const toDoSlice = createSlice({
       if (index !== -1) {
         state.items[index] = action.payload.updatedToDo
       }
+    }).addCase(editToDoStatus.fulfilled, (state, action) => {
+      const index = state.items.findIndex((item) => item._id === action.payload.id);
+      if (index !== -1) {
+        state.items[index] = {
+          ...state.items[index],
+          ...action.payload.updatedToDo, // Merge the updated fields
+        };
+      }
     }).addCase(deleteToDo.fulfilled, (state, action) => {
-      state.items = state.items.filter((item) => item._id !== action.payload.id)
+      state.items = state.items.filter((item) => item._id !== action.payload)
     })
   }
 

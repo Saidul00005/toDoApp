@@ -4,6 +4,7 @@ import Link from 'next/link'
 import { Navbar, NavbarBrand, NavbarContent, NavbarItem, NavbarMenuToggle, NavbarMenu, NavbarMenuItem, Button } from "@nextui-org/react";
 import { ThemeSwitcher } from "./ThemeSwitcher";
 import { usePathname } from "next/navigation";
+import { Divider } from "@nextui-org/react";
 
 export default function Navigationbar() {
   const [isMenuOpen, setIsMenuOpen] = React.useState(false);
@@ -23,69 +24,72 @@ export default function Navigationbar() {
   ];
 
   return (
-    <Navbar onMenuOpenChange={setIsMenuOpen}>
-      <NavbarContent>
-        <NavbarMenuToggle
-          aria-label={isMenuOpen ? "Close menu" : "Open menu"}
-          className="sm:hidden"
-        />
-        <NavbarBrand>
-          <p className="font-bold text-inherit">
-            <Link color="foreground" href="/">
-              💼TO DO ORGANIZER
-            </Link>
-          </p>
-        </NavbarBrand>
-      </NavbarContent>
+    <>
+      <Navbar onMenuOpenChange={setIsMenuOpen}>
+        <NavbarContent>
+          <NavbarMenuToggle
+            aria-label={isMenuOpen ? "Close menu" : "Open menu"}
+            className="sm:hidden"
+          />
+          <NavbarBrand>
+            <p className="font-bold text-inherit">
+              <Link color="foreground" href="/">
+                💼TO DO ORGANIZER
+              </Link>
+            </p>
+          </NavbarBrand>
+        </NavbarContent>
 
-      <NavbarContent className="hidden sm:flex gap-4" justify="center">
-        <NavbarItem isActive={pathname === '/toDoList'}>
-          <Link color={pathname === '/toDoList' ? '' : "foreground"} href="/toDoList" aria-current={pathname === '/toDoList' ? 'page' : ""}>
-            To do items list
-          </Link>
-        </NavbarItem>
-        <NavbarItem isActive={pathname === '/addNewItem'}>
-          <Link color={pathname === '/addNewItem' ? '' : "foreground"} href="/addNewItem" aria-current={pathname === '/addNewItem' ? 'page' : ""}>
-            Add new item
-          </Link>
-        </NavbarItem>
-        <NavbarItem isActive={pathname === '/history'}>
-          <Link color={pathname === '/history' ? '' : "foreground"} href="/history" aria-current={pathname === '/history' ? 'page' : ""}>
-            History
-          </Link>
-        </NavbarItem>
-      </NavbarContent>
-      <NavbarContent justify="end">
-        <NavbarItem className="hidden lg:flex">
-          <Button as={Link} href="#" variant="flat">
-            Login
-          </Button>
-        </NavbarItem>
-        <NavbarItem className="hidden lg:flex">
-          <Button as={Link} href="#" variant="flat">
-            Sign Up
-          </Button>
-        </NavbarItem>
-        <NavbarItem>
-          <ThemeSwitcher />
-        </NavbarItem>
-      </NavbarContent>
-      <NavbarMenu>
-        {menuItems.map((item, index) => (
-          <NavbarMenuItem key={`${item}-${index}`}>
-            <Link
-              color={
-                index === 2 ? "primary" : index === menuItems.length - 1 ? "danger" : "foreground"
-              }
-              className="w-full"
-              href="#"
-              size="lg"
-            >
-              {item}
+        <NavbarContent className="hidden sm:flex gap-4" justify="center">
+          <NavbarItem isActive={pathname === '/toDoList'}>
+            <Link color={pathname === '/toDoList' ? '' : "foreground"} href="/toDoList" aria-current={pathname === '/toDoList' ? 'page' : ""}>
+              To do items list
             </Link>
-          </NavbarMenuItem>
-        ))}
-      </NavbarMenu>
-    </Navbar >
+          </NavbarItem>
+          <NavbarItem isActive={pathname === '/addNewItem'}>
+            <Link color={pathname === '/addNewItem' ? '' : "foreground"} href="/addNewItem" aria-current={pathname === '/addNewItem' ? 'page' : ""}>
+              Add new item
+            </Link>
+          </NavbarItem>
+          <NavbarItem isActive={pathname === '/history'}>
+            <Link color={pathname === '/history' ? '' : "foreground"} href="/history" aria-current={pathname === '/history' ? 'page' : ""}>
+              History
+            </Link>
+          </NavbarItem>
+        </NavbarContent>
+        <NavbarContent justify="end">
+          <NavbarItem className="hidden lg:flex">
+            <Button as={Link} href="#" variant="flat">
+              Login
+            </Button>
+          </NavbarItem>
+          <NavbarItem className="hidden lg:flex">
+            <Button as={Link} href="#" variant="flat">
+              Sign Up
+            </Button>
+          </NavbarItem>
+          <NavbarItem>
+            <ThemeSwitcher />
+          </NavbarItem>
+        </NavbarContent>
+        <NavbarMenu>
+          {menuItems.map((item, index) => (
+            <NavbarMenuItem key={`${item}-${index}`}>
+              <Link
+                color={
+                  index === 2 ? "primary" : index === menuItems.length - 1 ? "danger" : "foreground"
+                }
+                className="w-full"
+                href="#"
+                size="lg"
+              >
+                {item}
+              </Link>
+            </NavbarMenuItem>
+          ))}
+        </NavbarMenu>
+      </Navbar >
+      <Divider className="my-2" />
+    </>
   );
 }
