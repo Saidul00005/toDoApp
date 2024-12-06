@@ -4,6 +4,7 @@ import Navigationbar from "@/components/Navigationbar";
 import Footer from "@/components/Footer";
 import { Providers } from "./providers";
 import ReduxProvider from "./redux/reduxProvider";
+import NextAuthProvider from "@/components/nextauth/sessionProvider";
 
 const roboto = Roboto({
   weight: ['400', '700'],
@@ -22,15 +23,17 @@ export default function RootLayout({ children }) {
         className={`${roboto.className} antialiased`}
       >
         <Providers>
-          <ReduxProvider>
-            <div className="flex flex-col min-h-screen">
-              <Navigationbar />
-              <main className="flex-grow">
-                {children}
-              </main>
-              <Footer />
-            </div>
-          </ReduxProvider>
+          <NextAuthProvider>
+            <ReduxProvider>
+              <div className="flex flex-col min-h-screen">
+                <Navigationbar />
+                <main className="flex-grow">
+                  {children}
+                </main>
+                <Footer />
+              </div>
+            </ReduxProvider>
+          </NextAuthProvider>
         </Providers>
       </body>
     </html >

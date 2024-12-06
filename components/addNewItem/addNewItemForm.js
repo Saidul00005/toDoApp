@@ -7,6 +7,7 @@ import { Input } from "@nextui-org/input";
 import { Textarea } from "@nextui-org/input";
 import { Button } from "@nextui-org/react";
 
+
 const AddNewItemForm = () => {
   const dispatch = useDispatch();
 
@@ -16,6 +17,11 @@ const AddNewItemForm = () => {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+
+    if (!session?.user?.email) {
+      window.alert("User is not authenticated. Please sign in.");
+      return;
+    }
 
     const toDoItemData = {
       toDoName: nameRef.current.value,
