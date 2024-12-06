@@ -23,11 +23,13 @@ export default function RootLayout({ children }) {
       >
         <Providers>
           <ReduxProvider>
-            <Navigationbar />
-            <main>
-              {children}
-            </main>
-            <Footer />
+            <div className="flex flex-col min-h-screen">
+              <Navigationbar />
+              <main className="flex-grow">
+                {children}
+              </main>
+              <Footer />
+            </div>
           </ReduxProvider>
         </Providers>
       </body>

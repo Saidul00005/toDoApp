@@ -35,15 +35,19 @@ const page = () => {
 
   return (
     <>
-      <div className='flex flex-col items-center justify-center my-4 mx-4'>
-        <h1 className="mb-4 text-xl font-extrabold text-gray-900 dark:text-white md:text-3xl lg:text-4xl"><span className="text-transparent bg-clip-text bg-gradient-to-r to-green-600 from-sky-400">To Do</span> Lists</h1>
-        <p className="text-md md:text-lg font-normal text-gray-500 dark:text-gray-400">Venture through your tasks today, Dreams and goals to light the way.</p>
+      <div className='flex flex-col items-center justify-center mx-4'>
+        <h1 className="mb-4 text-xl font-extrabold text-gray-900 dark:text-white md:text-3xl lg:text-4xl">
+          <span className="text-transparent bg-clip-text bg-gradient-to-r to-green-600 from-sky-400">To Do</span> Lists
+        </h1>
+        <p className="text-md md:text-lg font-normal text-gray-500 dark:text-gray-400">
+          Venture through your tasks today, Dreams and goals to light the way.
+        </p>
       </div>
 
       <div className="p-6">
         {Object.keys(groupedToDos).length > 0 ? (
           Object.keys(groupedToDos).map((date, index) => (
-            <div key={index} className='py-2'>
+            <div key={index} className="pt-2">
               <Divider className="my-1" />
               <h5 className="text-xl font-semibold text-center">{date}</h5>
               <Divider className="my-1" />
@@ -61,15 +65,18 @@ const page = () => {
                   />
                 ))}
               </div>
-
             </div>
           ))
         ) : (
-          <p>No pending to-dos available.</p>
+          <div className="flex flex-col items-center justify-center h-[50vh]">
+            <p className="text-md md:text-lg font-normal text-gray-500 dark:text-gray-400">
+              No pending to-do available.
+            </p>
+          </div>
         )}
       </div>
     </>
-  )
-}
+  );
+};
 
-export default page
+export default page;

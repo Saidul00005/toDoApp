@@ -4,28 +4,23 @@ import Link from 'next/link'
 import { Navbar, NavbarBrand, NavbarContent, NavbarItem, NavbarMenuToggle, NavbarMenu, NavbarMenuItem, Button } from "@nextui-org/react";
 import { ThemeSwitcher } from "./ThemeSwitcher";
 import { usePathname } from "next/navigation";
-import { Divider } from "@nextui-org/react";
 
 export default function Navigationbar() {
   const [isMenuOpen, setIsMenuOpen] = React.useState(false);
-  const pathname = usePathname()
+  const pathname = usePathname();
 
-  const menuItems = [
-    "Profile",
-    "Dashboard",
-    "Activity",
-    "Analytics",
-    "System",
-    "Deployments",
-    "My Settings",
-    "Team Settings",
-    "Help & Feedback",
-    "Log Out",
+  const desktopMenuItems = [
+    { name: "To do items list", href: "/toDoList" },
+    { name: "Add new item", href: "/addNewItem" },
+    { name: "History", href: "/history" },
   ];
 
+  const mobileMenuItems = desktopMenuItems; // Adjust this if you want separate items for mobile
+
   return (
-    <>
+    <div>
       <Navbar onMenuOpenChange={setIsMenuOpen}>
+        {/* Top Left: Logo and Menu Toggle */}
         <NavbarContent>
           <NavbarMenuToggle
             aria-label={isMenuOpen ? "Close menu" : "Open menu"}
@@ -33,38 +28,48 @@ export default function Navigationbar() {
           />
           <NavbarBrand>
             <p className="font-bold text-inherit">
-              <Link color="foreground" href="/">
+              <Link href="/" color="foreground">
                 💼TO DO ORGANIZER
               </Link>
             </p>
           </NavbarBrand>
         </NavbarContent>
 
+        {/* Center Menu Items for Desktop */}
         <NavbarContent className="hidden sm:flex gap-4" justify="center">
-          <NavbarItem isActive={pathname === '/toDoList'}>
-            <Link color={pathname === '/toDoList' ? '' : "foreground"} href="/toDoList" aria-current={pathname === '/toDoList' ? 'page' : ""}>
-              To do items list
-            </Link>
-          </NavbarItem>
-          <NavbarItem isActive={pathname === '/addNewItem'}>
-            <Link color={pathname === '/addNewItem' ? '' : "foreground"} href="/addNewItem" aria-current={pathname === '/addNewItem' ? 'page' : ""}>
-              Add new item
-            </Link>
-          </NavbarItem>
-          <NavbarItem isActive={pathname === '/history'}>
-            <Link color={pathname === '/history' ? '' : "foreground"} href="/history" aria-current={pathname === '/history' ? 'page' : ""}>
-              History
-            </Link>
-          </NavbarItem>
+          {desktopMenuItems.map(({ name, href }, index) => (
+            <NavbarItem key={index} isActive={pathname === href}>
+              <Link
+                href={href}
+                aria-current={pathname === href ? "page" : ""}
+                className={`${pathname === href ? "text-primary" : "text-foreground"
+                  }`}
+              >
+                {name}
+              </Link>
+            </NavbarItem>
+          ))}
         </NavbarContent>
+
+        {/* Right Side Items */}
         <NavbarContent justify="end">
           <NavbarItem className="hidden lg:flex">
-            <Button as={Link} href="#" variant="flat">
+            <Button
+              as={Link}
+              href="#"
+              variant="flat"
+              className={pathname === "/" ? "hidden" : ""}
+            >
               Login
             </Button>
           </NavbarItem>
           <NavbarItem className="hidden lg:flex">
-            <Button as={Link} href="#" variant="flat">
+            <Button
+              as={Link}
+              href="#"
+              variant="flat"
+              className={pathname === "/" ? "hidden" : ""}
+            >
               Sign Up
             </Button>
           </NavbarItem>
@@ -72,24 +77,22 @@ export default function Navigationbar() {
             <ThemeSwitcher />
           </NavbarItem>
         </NavbarContent>
+
+        {/* Mobile Menu */}
         <NavbarMenu>
-          {menuItems.map((item, index) => (
-            <NavbarMenuItem key={`${item}-${index}`}>
+          {mobileMenuItems.map(({ name, href }, index) => (
+            <NavbarMenuItem key={index}>
               <Link
-                color={
-                  index === 2 ? "primary" : index === menuItems.length - 1 ? "danger" : "foreground"
-                }
-                className="w-full"
-                href="#"
-                size="lg"
+                href={href}
+                className={`w-full ${pathname === href ? "text-primary font-bold" : "text-foreground"
+                  }`}
               >
-                {item}
+                {name}
               </Link>
             </NavbarMenuItem>
           ))}
         </NavbarMenu>
-      </Navbar >
-      <Divider className="my-2" />
-    </>
+      </Navbar>
+    </div>
   );
 }
