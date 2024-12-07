@@ -1,6 +1,6 @@
-'use client'
+import LogInModal from "@/components/logIn/logInModal";
+import SignUpModal from "@/components/signUp/signUpModal";
 import { Button } from "@nextui-org/react";
-import { signIn } from 'next-auth/react'
 
 export default function Home() {
   return (
@@ -15,7 +15,7 @@ export default function Home() {
 
       {/* Subtitle */}
       <p className="mb-2 text-center text-lg md:text-xl font-medium text-gray-700 dark:text-gray-300">
-        Kindly sign in to get started!
+        Kindly sign up or log in to get started!
       </p>
       <p className="mb-8 text-center text-lg md:text-xl font-medium text-gray-700 dark:text-gray-300">
         Your tasks. Organized. Simplified.
@@ -23,11 +23,10 @@ export default function Home() {
 
       {/* Call to Action Buttons */}
       <div className="flex gap-4">
-
-        <Button color="success" size="lg" onPress={() => signIn("google")}>Sign in with Google</Button>
+        <SignUpModal />
+        <LogInModal />
       </div>
-    </div>
+    </div >
   );
 }
-
 

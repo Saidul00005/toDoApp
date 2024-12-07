@@ -1,11 +1,10 @@
 'use client';
 
-import { useSession } from "next-auth/react";
+// import { useSession } from "next-auth/react";
 import { NextResponse } from "next/server";
 
 export async function POST(req) {
   try {
-    const { data: session } = useSession();
 
     if (!session || !session.accessToken) {
       return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
@@ -22,7 +21,7 @@ export async function POST(req) {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
-        'Authorization': `Bearer ${session.accessToken}`,  // Add the JWT token here
+        // 'Authorization': `Bearer ${session.accessToken}`,  // Add the JWT token here
       },
       body: JSON.stringify(body),
     });
