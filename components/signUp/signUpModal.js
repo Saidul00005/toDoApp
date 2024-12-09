@@ -1,4 +1,4 @@
-'use client'
+'use client';
 import { useForm } from "react-hook-form";
 import { Button, Modal, ModalContent, ModalHeader, ModalBody, ModalFooter, Input, useDisclosure } from "@nextui-org/react";
 
@@ -8,10 +8,36 @@ const SignUpModal = () => {
     mode: "onChange"
   });
 
-  const onSubmit = (data) => {
-    console.log("Form Data:", data);
-    reset();
-    onClose();
+  const onSubmit = async (data) => {
+    //console.log("Form Data:", data);
+    if (!data.userEmail || !data.password) {
+      alert("Please fill all fields before submitting.");
+      return;
+    }
+    try {
+      const response = await fetch("/api/auth/signUp", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(data),
+      });
+
+      if (!response.ok) {
+        const errorData = await response.json();
+        console.error("SignUp failed:", errorData.error);
+        alert("SignUp failed. Please try again.");
+        return;
+      }
+
+      const responseData = await response.json();
+      console.log("SignUp successful:", responseData);
+      reset();
+      onClose();
+      alert("SignUp successful! You can now log in.");
+    } catch (error) {
+      console.error("Error during SignUp:", error);
+    }
   };
 
   return (
@@ -26,7 +52,8 @@ const SignUpModal = () => {
                 label="Email"
                 placeholder="Enter your email"
                 type="email"
-                {...register("email", {
+                aria-label="Email Address"
+                {...register("userEmail", {
                   required: "Email is required",
                   pattern: {
                     value: /^[^\s@]+@[^\s@]+\.[^\s@]+$/,
@@ -39,7 +66,16 @@ const SignUpModal = () => {
                 label="Password"
                 placeholder="Enter your password"
                 type="password"
-                {...register("password", { required: "Password is required" })}
+                aria-label="Password"
+                {...register("password", {
+                  required: "Password is required",
+                  minLength: { value: 6, message: "Password must be at least 6 characters long" },
+                  pattern: {
+                    value: /^(?=.*[A-Za-z])(?=.*\d)[A-Za-z\d@$!%*?&]{6,}$/,
+                    message: "Password must contain at least one letter and one number",
+                  },
+                },
+                )}
                 errorMessage={errors.password?.message}
               />
             </ModalBody>

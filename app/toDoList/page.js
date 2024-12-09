@@ -35,7 +35,7 @@ const page = () => {
 
   return (
     <>
-      <div className='flex flex-col items-center justify-center mx-4'>
+      <div className='flex flex-col items-center justify-center mx-4 my-4'>
         <h1 className="mb-4 text-xl font-extrabold text-gray-900 dark:text-white md:text-3xl lg:text-4xl">
           <span className="text-transparent bg-clip-text bg-gradient-to-r to-green-600 from-sky-400">To Do</span> Lists
         </h1>

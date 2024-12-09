@@ -1,8 +1,12 @@
+'use client'
 import LogInModal from "@/components/logIn/logInModal";
 import SignUpModal from "@/components/signUp/signUpModal";
-import { Button } from "@nextui-org/react";
+import { useSession } from "next-auth/react";
 
 export default function Home() {
+
+  const { data: session, status } = useSession();
+
   return (
     <div className="flex flex-col items-center justify-center min-h-screen bg-gradient-to-b from-blue-100 via-white to-green-100 dark:from-gray-800 dark:via-gray-900 dark:to-black">
       {/* Heading */}
@@ -14,19 +18,31 @@ export default function Home() {
       </h1>
 
       {/* Subtitle */}
-      <p className="mb-2 text-center text-lg md:text-xl font-medium text-gray-700 dark:text-gray-300">
-        Kindly sign up or log in to get started!
-      </p>
-      <p className="mb-8 text-center text-lg md:text-xl font-medium text-gray-700 dark:text-gray-300">
-        Your tasks. Organized. Simplified.
-      </p>
+      {status === 'authenticated' ?
+        <p className="mb-2 text-center text-lg md:text-xl font-medium text-gray-700 dark:text-gray-300">
+          Let’s begin your journey of organization.
+        </p>
+        :
+        <>
+          <p className="mb-2 text-center text-lg md:text-xl font-medium text-gray-700 dark:text-gray-300">
+            Kindly sign up or log in to get started!
+          </p>
+          <p className="mb-8 text-center text-lg md:text-xl font-medium text-gray-700 dark:text-gray-300">
+            Your tasks. Organized. Simplified.
+          </p>
+        </>
+      }
+
 
       {/* Call to Action Buttons */}
-      <div className="flex gap-4">
-        <SignUpModal />
-        <LogInModal />
-      </div>
+      {status === 'authenticated' ? "" :
+        <div className="flex gap-4">
+          <LogInModal />
+          <SignUpModal />
+        </div>
+      }
     </div >
+
   );
 }
 

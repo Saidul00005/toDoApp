@@ -1,31 +1,35 @@
-import bcrypt from "bcryptjs";
-import User from "../../../models/User";
+import { NextResponse } from "next/server";
 
 export async function POST(req) {
   try {
-    const { username, password } = await req.json();
+    const { userEmail, password } = await req.json();
 
-    if (!username || !password) {
-      return new Response(JSON.stringify({ error: "Username and password are required" }), { status: 400 });
+    if (!userEmail || !password) {
+      return NextResponse.json({ error: "Username and password are required" }, { status: 400 });
     }
 
-    const existingUser = await User.findOne({ username });
+    const body = { userEmail, password };
 
-    if (existingUser) {
-      return new Response(JSON.stringify({ error: "Username already exists" }), { status: 400 });
-    }
-
-    const hashedPassword = await bcrypt.hash(password, 10);
-
-    const newUser = new User({
-      username,
-      password: hashedPassword,
+    // External API request
+    const response = await fetch(`${process.env.BACKEND_URL}/signUp`, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify(body),
     });
 
-    await newUser.save();
+    // Handle errors from the external API
+    if (!response.ok) {
+      const errorData = await response.json();
+      return NextResponse.json({ error: errorData.message || "Failed to create user." }, { status: response.status });
+    }
 
-    return new Response(JSON.stringify({ message: "User created successfully" }), { status: 201 });
+    // Success response
+    const responseData = await response.json();
+    return NextResponse.json({ message: "User created successfully.", data: responseData }, { status: 201 });
   } catch (error) {
-    return new Response(JSON.stringify({ error: "Server error" }), { status: 500 });
+    console.error("Error in sign-up route:", error);
+    return NextResponse.json({ error: "Server error" }, { status: 500 });
   }
 }

@@ -17,7 +17,7 @@ export async function POST(req) {
       return NextResponse.json({ error: 'Invalid data' }, { status: 400 });
     }
 
-    const response = await fetch('http://localhost:3001/addToDo', {
+    const response = await fetch(`${process.env.BACKEND_URL}/addToDo`, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
