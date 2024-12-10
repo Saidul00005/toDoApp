@@ -1,39 +1,49 @@
-'use client';
-
-// import { useSession } from "next-auth/react";
+import { getServerSession } from "next-auth/next";
 import { NextResponse } from "next/server";
+import { handler } from "@/app/api/auth/[...nextauth]/route"; // Path to the file where your NextAuth handler is defined
 
 export async function POST(req) {
   try {
 
-    if (!session || !session.accessToken) {
+    const session = await getServerSession(handler);
+
+    console.log(session.token)
+
+    // Check if the session is valid and the user is authenticated
+    if (!session || !session.user.token) {
       return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
     }
 
     const body = await req.json();
 
+    const { toDoName, toDoDescription, toDoACT, toDoStatus } = body;
 
-    if (!body.toDoName || !body.toDoDescription || !body.toDoACT || !body.toDoStatus) {
-      return NextResponse.json({ error: 'Invalid data' }, { status: 400 });
+    if (!toDoName || !toDoDescription || !toDoACT || !toDoStatus) {
+      return NextResponse.json({ error: "Invalid data" }, { status: 400 });
     }
 
+    // Send data to the backend API
     const response = await fetch(`${process.env.BACKEND_URL}/addToDo`, {
-      method: 'POST',
+      method: "POST",
       headers: {
-        'Content-Type': 'application/json',
-        // 'Authorization': `Bearer ${session.accessToken}`,  // Add the JWT token here
+        "Content-Type": "application/json",
+        "Authorization": `Bearer ${session.accessToken}`, // Add the JWT token here
       },
       body: JSON.stringify(body),
     });
 
     if (!response.ok) {
-      return NextResponse.json({ error: 'Failed to save.' }, { status: response.status });
+      const errorMessage = await response.text(); // Fetch detailed error message from the backend
+      return NextResponse.json({ error: errorMessage }, { status: response.status });
     }
 
     const responseData = await response.json();
-    return NextResponse.json({ message: 'To do item saved successfully.', data: responseData }, { status: 201 });
-
+    return NextResponse.json(
+      { message: "To do item saved successfully.", data: responseData },
+      { status: 201 }
+    );
   } catch (error) {
-    return NextResponse.json({ error: 'Error.' }, { status: 500 });
+    console.error("Error in POST handler:", error);
+    return NextResponse.json({ error: "Internal server error." }, { status: 500 });
   }
 }

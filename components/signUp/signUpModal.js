@@ -9,7 +9,6 @@ const SignUpModal = () => {
   });
 
   const onSubmit = async (data) => {
-    //console.log("Form Data:", data);
     if (!data.userEmail || !data.password) {
       alert("Please fill all fields before submitting.");
       return;
@@ -60,7 +59,8 @@ const SignUpModal = () => {
                     message: "Invalid email address",
                   },
                 })}
-                errorMessage={errors.email?.message}
+                errorMessage={errors.userEmail?.message}  // Display error message
+                status={errors.userEmail ? 'error' : 'default'}  // Apply error status
               />
               <Input
                 label="Password"
@@ -74,9 +74,9 @@ const SignUpModal = () => {
                     value: /^(?=.*[A-Za-z])(?=.*\d)[A-Za-z\d@$!%*?&]{6,}$/,
                     message: "Password must contain at least one letter and one number",
                   },
-                },
-                )}
-                errorMessage={errors.password?.message}
+                })}
+                errorMessage={errors.password?.message}  // Display error message
+                status={errors.password ? 'error' : 'default'}  // Apply error status
               />
             </ModalBody>
             <ModalFooter>

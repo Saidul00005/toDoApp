@@ -13,7 +13,6 @@ const page = () => {
       </div>
     </div>
 
-
   )
 }
 

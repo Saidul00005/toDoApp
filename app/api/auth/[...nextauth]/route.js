@@ -21,34 +21,41 @@ export const handler = NextAuth({
 
         const user = await res.json();
 
-        if (res.ok && user) {
-          return user;
+        // If backend returns a user and a token, return user object
+        if (res.ok && user.token && user.user) {
+          return {
+            id: user.user._id,
+            email: user.user.userEmail,
+            token: user.token,  // Store the token as part of the user object
+          };
         }
+
+        // If login fails, return null
         return null;
       },
     }),
   ],
   session: {
-    strategy: "jwt",
+    strategy: "jwt",  // We are using JWT for sessions
   },
   callbacks: {
     async jwt({ token, user }) {
       if (user) {
         token.id = user.id;
-        token.email = user.email; // Add custom fields if needed
+        token.email = user.email;
+        token.token = user.token;  // Store the JWT token in the session token
       }
       return token;
     },
     async session({ session, token }) {
-      session.user = token; // Include token data in session
+      session.user = token;  // Add the token data to session's user
       return session;
     },
     async redirect({ url, baseUrl }) {
-      // Use custom logic for redirection
       return url.startsWith(baseUrl) ? url : baseUrl;
     },
   },
   secret: process.env.NEXTAUTH_SECRET,
-})
+});
 
 export { handler as GET, handler as POST };
