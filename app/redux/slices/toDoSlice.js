@@ -42,6 +42,7 @@ export const editToDoStatus = createAsyncThunk('/editToDoStatus', async ({ id, u
     body: JSON.stringify(updatedToDo),
   });
   const result = await response.json();
+  console.log(result)
   return { id, updatedToDo: result.data.data };
 });
 

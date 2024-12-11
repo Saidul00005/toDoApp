@@ -1,7 +1,8 @@
 'use client'
-import LogInModal from "@/components/logIn/logInModal";
-import SignUpModal from "@/components/signUp/signUpModal";
+
 import { useSession } from "next-auth/react";
+import Link from "next/link";
+import { Button } from "@nextui-org/react";
 
 export default function Home() {
 
@@ -35,12 +36,22 @@ export default function Home() {
 
 
       {/* Call to Action Buttons */}
-      {status === 'authenticated' ? "" :
+      {status !== 'authenticated' && (
         <div className="flex gap-4">
-          <LogInModal />
-          <SignUpModal />
+          <Link href="/logIn">
+            <Button radius='full' color="primary" size="lg">
+              Log In
+            </Button>
+          </Link>
+          <Link href="/signUp">
+            <Button radius='full' color="success" size="lg">
+              Sign Up
+            </Button>
+          </Link>
         </div>
+      )
       }
+
     </div >
 
   );

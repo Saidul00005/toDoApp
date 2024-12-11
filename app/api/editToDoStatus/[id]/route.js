@@ -1,7 +1,16 @@
 import { NextResponse } from 'next/server';
+import { getServerSession } from "next-auth/next";
+import { authOptions } from "@/app/api/auth/[...nextauth]/route";
 
 export async function PATCH(req, { params }) {
   try {
+    const session = await getServerSession(authOptions);
+
+    // Check if the session is valid and the user is authenticated
+    if (!session || !session.user.token) {
+      return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+    }
+
     const { id } = await params;
     const { toDoStatus, toDoEditionDate } = await req.json();
 
@@ -13,10 +22,11 @@ export async function PATCH(req, { params }) {
       return NextResponse.json({ error: 'Invalid data' }, { status: 400 });
     }
 
-    const response = await fetch(`http://localhost:3001/editToDoStatus/${id}`, {
+    const response = await fetch(`${process.env.BACKEND_URL}/editToDoStatus/${id}`, {
       method: 'PATCH',
       headers: {
         'Content-Type': 'application/json',
+        "Authorization": `Bearer ${session.user.token}`, // Add the JWT token here
       },
       body: JSON.stringify({ toDoStatus, toDoEditionDate }),
     });

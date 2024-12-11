@@ -1,13 +1,11 @@
 import { getServerSession } from "next-auth/next";
 import { NextResponse } from "next/server";
-import { handler } from "@/app/api/auth/[...nextauth]/route"; // Path to the file where your NextAuth handler is defined
+import { authOptions } from "@/app/api/auth/[...nextauth]/route";
 
 export async function POST(req) {
   try {
 
-    const session = await getServerSession(handler);
-
-    console.log(session.token)
+    const session = await getServerSession(authOptions);
 
     // Check if the session is valid and the user is authenticated
     if (!session || !session.user.token) {
@@ -27,7 +25,7 @@ export async function POST(req) {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
-        "Authorization": `Bearer ${session.accessToken}`, // Add the JWT token here
+        "Authorization": `Bearer ${session.user.token}`, // Add the JWT token here
       },
       body: JSON.stringify(body),
     });

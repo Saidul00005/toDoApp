@@ -1,15 +1,27 @@
 import { NextResponse } from 'next/server';
+import { getServerSession } from "next-auth/next";
+import { authOptions } from "@/app/api/auth/[...nextauth]/route";
 
 export async function DELETE(req, { params }) {
   try {
+    const session = await getServerSession(authOptions);
+
+    // Check if the session is valid and the user is authenticated
+    if (!session || !session.user.token) {
+      return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+    }
+
     const { id } = await params;
 
     if (!id) {
       return NextResponse.json({ error: 'Invalid or missing ID' }, { status: 400 });
     }
 
-    const response = await fetch(`http://localhost:3001/deleteToDo/${id}`, {
+    const response = await fetch(`${process.env.BACKEND_URL}/deleteToDo/${id}`, {
       method: 'DELETE',
+      headers: {
+        "Authorization": `Bearer ${session.user.token}`, // Add the JWT token here
+      }
     });
 
     if (!response.ok) {

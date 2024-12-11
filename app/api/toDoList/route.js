@@ -1,12 +1,22 @@
+import { getServerSession } from "next-auth/next";
 import { NextResponse } from "next/server";
+import { authOptions } from "@/app/api/auth/[...nextauth]/route";
 
 export async function GET(req) {
   try {
+    const session = await getServerSession(authOptions);
+
+    // Check if the session is valid and the user is authenticated
+    if (!session || !session.user.token) {
+      return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+    }
+
     // Fetch the list of todos from your data source (e.g., database or external API)
-    const response = await fetch('http://localhost:3001/toDoList', {
+    const response = await fetch(`${process.env.BACKEND_URL}/toDoList`, {
       method: 'GET',
       headers: {
         'Content-Type': 'application/json',
+        "Authorization": `Bearer ${session.user.token}`, // Add the JWT token here
       },
     });
 
