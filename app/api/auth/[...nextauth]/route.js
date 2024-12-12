@@ -20,48 +20,72 @@ export const authOptions = {
         });
 
         const user = await res.json();
-        // console.log(user)
 
         if (!res.ok) {
           throw new Error("Failed to log in: Invalid credentials or server error");
         }
 
-        if (!user.token || !user.user) {
-          throw new Error("Invalid response from backend: Missing user or token");
+        if (!user.token || !user.refreshToken || !user.user) {
+          throw new Error("Invalid response from backend: Missing user, token, or refresh token");
         }
 
-        // If backend returns a user and a token, return user object
-        if (res.ok && user.token && user.user) {
+
+        if (res.ok && user.token && user.refreshToken && user.user) {
           return {
             id: user.user._id,
             email: user.user.userEmail,
-            token: user.token,  // Store the token as part of the user object
+            token: user.token,
+            refreshToken: user.refreshToken,
           };
         }
 
-        // If login fails, return null
         return null;
       },
     }),
   ],
   session: {
-    strategy: "jwt",  // We are using JWT for sessions
+    strategy: "jwt",
   },
   callbacks: {
     async jwt({ token, user }) {
-      // console.log("JWT callback - token:", token);
       if (user) {
-        // console.log("JWT callback - user:", user);
         token.id = user.id;
         token.email = user.email;
-        token.token = user.token;  // Store the JWT token in the session token
+        token.token = user.token;
+        token.refreshToken = user.refreshToken;
+        token.accessTokenExpiry = Date.now() + 60 * 60 * 1000; // Set expiry (1 hour)
       }
+
+      // Handle token expiration and refresh
+      if (Date.now() > token.accessTokenExpiry) {
+        try {
+          const res = await fetch(`${process.env.BACKEND_URL}/refresh-token`, {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ refreshToken: token.refreshToken }),
+          });
+
+          if (!res.ok) {
+            throw new Error("Failed to refresh access token");
+          }
+
+          const data = await res.json();
+          token.token = data.accessToken; // Update access token
+          token.accessTokenExpiry = Date.now() + 60 * 60 * 1000; // Reset expiry
+        } catch (error) {
+          console.error("Error refreshing access token:", error);
+          return {}; // Keep old token; user will need to re-login if it's invalid
+        }
+      }
+
       return token;
     },
     async session({ session, token }) {
-      // console.log("Session callback - token:", token);
-      session.user = token;  // Add the token data to session's user
-      // console.log("Session callback - session:", session);
+      session.user = {
+        id: token.id,
+        email: token.email,
+        token: token.token, // Include the latest access token
+      };
       return session;
     },
     async redirect({ url, baseUrl }) {
@@ -69,7 +93,7 @@ export const authOptions = {
     },
   },
   secret: process.env.NEXTAUTH_SECRET,
-}
+};
 
 export const GET = NextAuth(authOptions);
 export const POST = NextAuth(authOptions);

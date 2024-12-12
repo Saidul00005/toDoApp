@@ -1,24 +1,43 @@
 import { Modal, ModalContent, ModalHeader, ModalBody, ModalFooter, Button, useDisclosure } from "@nextui-org/react";
 import { useDispatch } from 'react-redux';
 import { editToDoStatus } from '@/app/redux/slices/toDoSlice';
+import { useState } from "react";
+import { useToast } from '@/components/toastMessage/toastContext';
 
 export default function ToDoStatusChange({ id, toDoStatus }) {
   const { isOpen, onOpen, onOpenChange, onClose } = useDisclosure();
   const dispatch = useDispatch();
+  const { showToast } = useToast();
+
+  // Loading state to track the status of the action
+  const [isLoading, setIsLoading] = useState(false);
 
   const handleMarkAsCompleted = async () => {
+    setIsLoading(true);
     const updatedToDo = {
       toDoStatus: toDoStatus === 'Completed' ? 'Pending' : 'Completed',
       toDoEditionDate: new Date().toISOString()
+    };
+    try {
+      await dispatch(editToDoStatus({ id, updatedToDo })).unwrap();
+      onClose();
+      showToast('Status updated successfully!', 'success');
+    } catch (error) {
+      showToast('Failed to update status. Please try again.', 'error');
+    } finally {
+      setIsLoading(false);
     }
-    await dispatch(editToDoStatus({ id, updatedToDo })).unwrap();
-    onClose()
-
-  }
+  };
 
   return (
     <>
-      <Button onPress={onOpen} size='sm' color={toDoStatus === 'Completed' ? "primary" : "success"} >{toDoStatus === 'Completed' ? 'Mark as Pending' : 'Mark as Completed'}</Button>
+      <Button
+        onPress={onOpen}
+        size="sm"
+        color={toDoStatus === 'Completed' ? "primary" : "success"}
+      >
+        {toDoStatus === 'Completed' ? 'Mark as Pending' : 'Mark as Completed'}
+      </Button>
       <Modal isOpen={isOpen} onOpenChange={onOpenChange}>
         <ModalContent>
           <ModalHeader className="flex flex-col gap-1">Confirmation</ModalHeader>
@@ -34,7 +53,7 @@ export default function ToDoStatusChange({ id, toDoStatus }) {
             <Button color="danger" variant="light" onPress={onClose}>
               No
             </Button>
-            <Button color="primary" onPress={handleMarkAsCompleted}>
+            <Button color="primary" onPress={handleMarkAsCompleted} isLoading={isLoading}>
               Yes
             </Button>
           </ModalFooter>

@@ -5,6 +5,7 @@ import Footer from "@/components/Footer";
 import { Providers } from "./providers";
 import ReduxProvider from "./redux/reduxProvider";
 import NextAuthProvider from "@/components/nextauth/sessionProvider";
+import { ToastProvider } from '@/components/toastMessage/toastContext';
 
 const roboto = Roboto({
   weight: ['400', '700'],
@@ -27,9 +28,11 @@ export default function RootLayout({ children }) {
             <ReduxProvider>
               <div className="flex flex-col min-h-screen">
                 <Navigationbar />
-                <main className="flex-grow">
-                  {children}
-                </main>
+                <ToastProvider>
+                  <main className="flex-grow">
+                    {children}
+                  </main>
+                </ToastProvider>
                 <Footer />
               </div>
             </ReduxProvider>

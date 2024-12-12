@@ -1,7 +1,8 @@
-import React, { useEffect, useReducer } from 'react';
+import React, { useState, useEffect, useReducer } from 'react';
 import { useSelector, useDispatch } from 'react-redux';
 import { editToDo, selectToDos } from '@/app/redux/slices/toDoSlice';
 import { Button, Modal, ModalContent, ModalHeader, ModalBody, ModalFooter, Input, Textarea, useDisclosure } from "@nextui-org/react";
+import { useToast } from '@/components/toastMessage/toastContext';
 
 const initialFormState = {
   toDoName: '',
@@ -33,8 +34,11 @@ const ToDoEdit = ({ id, name, description, status, act, creationDate, editionDat
 
   const dispatch = useDispatch();
   const toDos = useSelector(selectToDos);
+  const { showToast } = useToast();
 
   const [formState, formDispatch] = useReducer(formReducer, initialFormState);
+  const [isLoading, setIsLoading] = useState(false);
+
 
   const toDoItem = toDos.find((item) => item._id === id);
 
@@ -65,6 +69,7 @@ const ToDoEdit = ({ id, name, description, status, act, creationDate, editionDat
   }, [toDoItem]);
 
   const handleSubmit = async () => {
+    setIsLoading(true)
     const updatedToDo = {
       toDoName: formState.toDoName,
       toDoDescription: formState.toDoDescription,
@@ -74,8 +79,16 @@ const ToDoEdit = ({ id, name, description, status, act, creationDate, editionDat
       toDoEditionDate: new Date().toISOString(),
     };
 
-    await dispatch(editToDo({ id, updatedToDo })).unwrap();
-    onClose();
+    try {
+      await dispatch(editToDo({ id, updatedToDo })).unwrap();
+      onClose();
+      showToast('Item edited successfully.', 'success');
+    } catch (error) {
+      showToast('Failed. Please try again.', 'error');
+      //alert("Failed to update to-do");
+    } finally {
+      setIsLoading(false);
+    }
   }
 
 
@@ -120,7 +133,7 @@ const ToDoEdit = ({ id, name, description, status, act, creationDate, editionDat
               <Button color="danger" variant="light" onPress={onClose}>
                 Close
               </Button>
-              <Button color="primary" onPress={handleSubmit}>
+              <Button color="primary" onPress={handleSubmit} isLoading={isLoading}>
                 Update
               </Button>
             </ModalFooter>

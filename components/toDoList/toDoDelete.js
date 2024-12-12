@@ -1,14 +1,29 @@
-import { Modal, ModalContent, ModalHeader, ModalBody, ModalFooter, Button, useDisclosure } from "@nextui-org/react";
+import { Modal, ModalContent, ModalBody, ModalFooter, Button, useDisclosure } from "@nextui-org/react";
 import { useDispatch } from 'react-redux';
 import { deleteToDo } from '@/app/redux/slices/toDoSlice';
+import { useState } from 'react';
+import { useToast } from '@/components/toastMessage/toastContext';
+
 
 export default function ToDoDelete({ id, toDoStatus }) {
   const { isOpen, onOpen, onOpenChange, onClose } = useDisclosure();
   const dispatch = useDispatch();
+  const { showToast } = useToast();
+  const [isLoading, setIsLoading] = useState(false);
+
 
   const handleDelete = async () => {
-    await dispatch(deleteToDo(id)).unwrap();
-    onClose()
+    setIsLoading(true);
+    try {
+      await dispatch(deleteToDo(id)).unwrap();
+      onClose();
+      showToast('Deleted successfully!', 'success');
+    } catch (error) {
+      showToast('Failed. Please try again.', 'error');
+      // alert("Failed to delete to-do");
+    } finally {
+      setIsLoading(false);
+    }
   }
 
   return (
@@ -29,7 +44,7 @@ export default function ToDoDelete({ id, toDoStatus }) {
             <Button color="danger" onPress={onClose}>
               No
             </Button>
-            <Button color="primary" variant="light" onPress={handleDelete}>
+            <Button color="primary" variant="light" onPress={handleDelete} isLoading={isLoading}>
               Yes
             </Button>
           </ModalFooter>
