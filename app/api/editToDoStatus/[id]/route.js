@@ -22,7 +22,7 @@ export async function PATCH(req, { params }) {
       return NextResponse.json({ error: 'Invalid data' }, { status: 400 });
     }
 
-    const response = await fetch(`${process.env.BACKEND_URL}/editToDoStatus/${id}`, {
+    const response = await fetch(`${process.env.NEXT_PUBLIC_BACKEND_URL}/editToDoStatus/${id}`, {
       method: 'PATCH',
       headers: {
         'Content-Type': 'application/json',

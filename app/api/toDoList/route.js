@@ -12,7 +12,7 @@ export async function GET(req) {
     }
 
     // Fetch the list of todos from your data source (e.g., database or external API)
-    const response = await fetch(`${process.env.BACKEND_URL}/toDoList`, {
+    const response = await fetch(`${process.env.NEXT_PUBLIC_BACKEND_URL}/toDoList`, {
       method: 'GET',
       headers: {
         'Content-Type': 'application/json',

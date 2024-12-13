@@ -10,7 +10,7 @@ export const authOptions = {
         password: { label: "Password", type: "password" },
       },
       async authorize(credentials) {
-        const res = await fetch(`${process.env.BACKEND_URL}/login`, {
+        const res = await fetch(`${process.env.NEXT_PUBLIC_BACKEND_URL}/login`, {
           method: "POST",
           headers: { "Content-Type": "application/json" },
           body: JSON.stringify({
@@ -59,7 +59,7 @@ export const authOptions = {
       // Handle token expiration and refresh
       if (Date.now() > token.accessTokenExpiry) {
         try {
-          const res = await fetch(`${process.env.BACKEND_URL}/refresh-token`, {
+          const res = await fetch(`${process.env.NEXT_PUBLIC_BACKEND_URL}/refresh-token`, {
             method: "POST",
             headers: { "Content-Type": "application/json" },
             body: JSON.stringify({ refreshToken: token.refreshToken }),

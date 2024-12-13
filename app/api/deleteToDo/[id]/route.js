@@ -17,7 +17,7 @@ export async function DELETE(req, { params }) {
       return NextResponse.json({ error: 'Invalid or missing ID' }, { status: 400 });
     }
 
-    const response = await fetch(`${process.env.BACKEND_URL}/deleteToDo/${id}`, {
+    const response = await fetch(`${process.env.NEXT_PUBLIC_BACKEND_URL}/deleteToDo/${id}`, {
       method: 'DELETE',
       headers: {
         "Authorization": `Bearer ${session.user.token}`, // Add the JWT token here
