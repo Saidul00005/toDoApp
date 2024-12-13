@@ -5,9 +5,12 @@ import { Button, Input } from "@nextui-org/react";
 import { ErrorMessage } from "@hookform/error-message";
 import { useRouter } from "next/navigation";
 import { signIn } from "next-auth/react";
+import { useToast } from '@/components/toastMessage/toastContext';
 
 const LogInPage = () => {
   const router = useRouter();
+  const { showToast } = useToast();
+
   const { register, handleSubmit, reset, formState: { errors, isSubmitting } } = useForm({
     mode: "onChange",
     criteriaMode: 'all',
@@ -16,7 +19,7 @@ const LogInPage = () => {
     const { email, password } = data;
 
     if (!email || !password) {
-      alert("Please fill all fields before submitting.");
+      showToast("Please fill all fields before submitting.", 'error');
       return;
     }
 
@@ -28,14 +31,14 @@ const LogInPage = () => {
       });
 
       if (result?.error) {
-        alert("Invalid email or password.");
+        showToast("Invalid email or password.", 'error');
       } else {
         reset();
-        alert("Login successful!");
         router.push("/");
+        showToast('Login Successful.', 'success');
       }
     } catch (error) {
-      alert("An unexpected error occurred. Please try again.");
+      showToast("An unexpected error occurred. Please try again.", 'error');
     }
   };
 
@@ -72,9 +75,21 @@ const LogInPage = () => {
               Object.entries(messages).map(([type, message]) => (
                 <div
                   key={type}
-                  className="mt-1 px-2 py-1 text-sm text-red-700 rounded-md dark:bg-gray-800 dark:text-red-500"
+                  className="flex items-center gap-2 mt-1 px-2 py-1 rounded-md bg-red-50 dark:bg-red-900 text-red-700 dark:text-red-300 border border-red-300 dark:border-red-700"
                 >
-                  {message}
+                  <svg
+                    xmlns="http://www.w3.org/2000/svg"
+                    viewBox="0 0 24 24"
+                    fill="currentColor"
+                    className="w-5 h-5 text-red-500 dark:text-red-300"
+                  >
+                    <path
+                      fillRule="evenodd"
+                      d="M9.401 1.676a3 3 0 015.198 0l7.447 12.924c1.237 2.147-.309 4.8-2.599 4.8H4.553c-2.29 0-3.836-2.653-2.6-4.8L9.4 1.676zM12 8.25a.75.75 0 00-.75.75v3a.75.75 0 001.5 0v-3a.75.75 0 00-.75-.75zm.75 7.5a.75.75 0 11-1.5 0 .75.75 0 011.5 0z"
+                      clipRule="evenodd"
+                    />
+                  </svg>
+                  <p className="text-sm">{message}</p>
                 </div>
               ))
             }
@@ -101,9 +116,21 @@ const LogInPage = () => {
               Object.entries(messages).map(([type, message]) => (
                 <div
                   key={type}
-                  className="mt-1 px-2 py-1 text-sm text-red-700 rounded-md dark:bg-gray-800 dark:text-red-500"
+                  className="flex items-center gap-2 mt-1 px-2 py-1 rounded-md bg-red-50 dark:bg-red-900 text-red-700 dark:text-red-300 border border-red-300 dark:border-red-700"
                 >
-                  {message}
+                  <svg
+                    xmlns="http://www.w3.org/2000/svg"
+                    viewBox="0 0 24 24"
+                    fill="currentColor"
+                    className="w-5 h-5 text-red-500 dark:text-red-300"
+                  >
+                    <path
+                      fillRule="evenodd"
+                      d="M9.401 1.676a3 3 0 015.198 0l7.447 12.924c1.237 2.147-.309 4.8-2.599 4.8H4.553c-2.29 0-3.836-2.653-2.6-4.8L9.4 1.676zM12 8.25a.75.75 0 00-.75.75v3a.75.75 0 001.5 0v-3a.75.75 0 00-.75-.75zm.75 7.5a.75.75 0 11-1.5 0 .75.75 0 011.5 0z"
+                      clipRule="evenodd"
+                    />
+                  </svg>
+                  <p className="text-sm">{message}</p>
                 </div>
               ))
             }
