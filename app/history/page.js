@@ -5,7 +5,7 @@ import { useDispatch, useSelector } from 'react-redux'
 import { fetchToDos, selectToDos } from '@/app/redux/slices/toDoSlice'
 import { Divider } from "@nextui-org/react";
 
-const page = () => {
+const Page = () => {
   const dispatch = useDispatch()
   const toDos = useSelector(selectToDos)
 
@@ -79,4 +79,4 @@ const page = () => {
   );
 }
 
-export default page
+export default Page
