@@ -14,7 +14,7 @@ The application is currently live and can be accessed at this following link:
 
 The application's API or backend is currently available at this following link:
 
-[To-Do App API(GitHub repository](https://github.com/Saidul00005/toDoAppBackend)
+[To-Do App API(GitHub repository)](https://github.com/Saidul00005/toDoAppBackend)
 
 ## Features
 
