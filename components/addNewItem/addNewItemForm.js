@@ -53,6 +53,8 @@ const AddNewItemForm = () => {
               label="To Do Name"
               placeholder="Enter to-do name"
               isRequired
+              variant='bordered'
+              autoFocus
               {...register("toDoName", {
                 required: "To-Do Name is required",
                 minLength: { value: 3, message: "To-do name must be at least 3 characters long" },
@@ -96,6 +98,7 @@ const AddNewItemForm = () => {
               label="Description"
               placeholder="Enter to-do description"
               isRequired
+              variant='bordered'
               {...register("toDoDescription", {
                 required: "Description is required",
                 minLength: { value: 10, message: "Description must be at least 10 characters long" },
@@ -140,15 +143,21 @@ const AddNewItemForm = () => {
 
           {/* Deadline Date and Time */}
           <div className="flex flex-col">
-            <label
+            {/* <label
               htmlFor="toDoACT"
               className="block text-xs font-medium mb-2 text-gray-800 dark:text-gray-200"
             >
               Assumptive Completion Time:<span className="text-red-500"> *</span>
-            </label>
-            <input
+            </label> */}
+            <Input
               id="toDoACT"
               type="datetime-local"
+              isRequired
+              variant='bordered'
+              label='Assumptive Completion Time:'
+              labelPlacement='outside'
+              placeholder='a'
+              size='sm'
               {...register("toDoACT", {
                 required: "Completion time is required",
                 validate: {
@@ -162,8 +171,6 @@ const AddNewItemForm = () => {
                   }
                 }
               })}
-              className="w-full border border-gray-300 dark:border-gray-600 rounded-lg p-2 bg-gray-50 dark:bg-gray-700 text-gray-900 dark:text-gray-100 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition duration-300"
-              required
             />
             <ErrorMessage
               errors={errors}

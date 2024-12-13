@@ -89,6 +89,8 @@ const ToDoEdit = ({ id, status }) => {
                     variant="bordered"
                     autoFocus
                     id='toDoName'
+                    labelPlacement='outside'
+                    size='sm'
                   />
                   <ErrorMessage
                     errors={errors}
@@ -131,7 +133,12 @@ const ToDoEdit = ({ id, status }) => {
               }}
               render={({ field }) => (
                 <div>
-                  <Textarea {...field} label="Description" isRequired variant="bordered" id='toDoDescription' />
+                  <Textarea {...field} label="Description" isRequired variant="bordered" id='toDoDescription' disableAnimation
+                    disableAutosize labelPlacement='outside' size='sm'
+                    classNames={{
+                      base: "col-span-12 md:col-span-6 mb-6 md:mb-0",
+                      input: "resize-y min-h-[40px]",
+                    }} />
                   <ErrorMessage
                     errors={errors}
                     name="toDoDescription"
@@ -180,13 +187,8 @@ const ToDoEdit = ({ id, status }) => {
               }}
               render={({ field }) => (
                 <div>
-                  <label
-                    htmlFor="toDoACT"
-                    className="block text-xs font-medium mb-2 text-gray-800 dark:text-gray-200"
-                  >
-                    Assumptive Completion Time:<span className="text-red-500"> *</span>
-                  </label>
-                  <Input {...field} type="datetime-local" isRequired variant='bordered' id='toDoACT' />
+                  <Input {...field} type="datetime-local" isRequired variant='bordered' id='toDoACT' label='Assumptive Completion Time:' labelPlacement='outside'
+                    placeholder='a' size='sm' />
                   <ErrorMessage
                     errors={errors}
                     name="toDoACT"
