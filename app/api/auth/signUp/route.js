@@ -11,7 +11,7 @@ export async function POST(req) {
     const body = { userEmail, password };
 
     // External API request
-    const response = await fetch(`${process.env.NEXT_PUBLIC_BACKEND_URL}/signUp`, {
+    const response = await fetch(`${process.env.BACKEND_URL}/signUp`, {
       method: "POST",
       headers: {
         "Content-Type": "application/json",

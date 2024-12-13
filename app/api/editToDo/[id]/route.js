@@ -20,7 +20,7 @@ export async function PUT(req, { params }) {
       return NextResponse.json({ error: 'Invalid data' }, { status: 400 });
     }
 
-    const response = await fetch(`${process.env.NEXT_PUBLIC_BACKEND_URL}/editToDo/${id}`, {
+    const response = await fetch(`${process.env.BACKEND_URL}/editToDo/${id}`, {
       method: 'PUT',
       headers: {
         'Content-Type': 'application/json',

@@ -21,7 +21,7 @@ export async function POST(req) {
     }
 
     // Send data to the backend API
-    const response = await fetch(`${process.env.NEXT_PUBLIC_BACKEND_URL}/addToDo`, {
+    const response = await fetch(`${process.env.BACKEND_URL}/addToDo`, {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
