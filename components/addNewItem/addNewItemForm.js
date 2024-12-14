@@ -20,10 +20,11 @@ const AddNewItemForm = () => {
   const { register, handleSubmit, reset, formState: { errors, isSubmitting } } = useForm({ criteriaMode: "all" });
 
   const onSubmit = async (data) => {
+    const toDoACTUtc = new Date(data.toDoACT).toISOString();
     const toDoItemData = {
       toDoName: data.toDoName,
       toDoDescription: data.toDoDescription,
-      toDoACT: data.toDoACT,
+      toDoACT: toDoACTUtc,
       toDoStatus: 'Pending',
       toDoCreationDate: new Date().toISOString(),
     };

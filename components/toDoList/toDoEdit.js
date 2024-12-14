@@ -33,8 +33,11 @@ const ToDoEdit = ({ id, status }) => {
 
 
   const onSubmit = async (data) => {
+    const toDoACTUtc = new Date(data.toDoACT).toISOString();
     const updatedToDo = {
-      ...data,
+      toDoName: data.toDoName,
+      toDoDescription: data.toDoDescription,
+      toDoACT: toDoACTUtc,
       toDoStatus: status,
       toDoCreationDate: toDoItem.toDoCreationDate,
       toDoEditionDate: new Date().toISOString(),
