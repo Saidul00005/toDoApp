@@ -63,6 +63,7 @@ const toDoSlice = createSlice({
   extraReducers: (builder) => {
     builder.addCase(fetchToDos.pending, (state) => {
       state.loading = true;
+      state.error = null
     }).addCase(fetchToDos.fulfilled, (state, action) => {
       // console.log('Fetched ToDos from API:', action.payload);
       state.loading = false;
@@ -92,5 +93,9 @@ const toDoSlice = createSlice({
 
 })
 
+export const { resetError } = toDoSlice.actions
 export const selectToDos = (state) => state.toDos.items
+export const selectLoading = (state) => state.toDos.loading
+export const selectError = (state) => state.toDos.error
+
 export default toDoSlice.reducer;

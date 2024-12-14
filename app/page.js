@@ -1,12 +1,20 @@
-'use client'
+"use client";
 
 import { useSession } from "next-auth/react";
 import Link from "next/link";
 import { Button } from "@nextui-org/react";
+import { validateSession } from "@/utils/session";
+import { useEffect } from "react";
 
 export default function Home() {
+  const { data: session, status } = useSession();
+  useEffect(() => {
+    if (!validateSession(session, status)) {
+      return; // Exit early if the session is invalid
+    }
 
-  const { data: session } = useSession();
+    console.log('Session is valid');
+  }, [session, status]);
 
   return (
     <div className="flex flex-col items-center justify-center min-h-screen bg-gradient-to-b from-blue-100 via-white to-green-100 dark:from-gray-800 dark:via-gray-900 dark:to-black">
@@ -19,11 +27,11 @@ export default function Home() {
       </h1>
 
       {/* Subtitle */}
-      {session ?
+      {session ? (
         <p className="mb-2 text-center text-lg md:text-xl font-medium text-gray-700 dark:text-gray-300">
           Let’s begin your journey of organization.
         </p>
-        :
+      ) : (
         <>
           <p className="mb-2 text-center text-lg md:text-xl font-medium text-gray-700 dark:text-gray-300">
             Kindly sign up or log in to get started!
@@ -32,28 +40,23 @@ export default function Home() {
             Your tasks. Organized. Simplified.
           </p>
         </>
-      }
-
+      )}
 
       {/* Call to Action Buttons */}
       {!session && (
         <div className="flex gap-4">
           <Link href="/logIn">
-            <Button radius='full' color="primary" size="lg">
+            <Button radius="full" color="primary" size="lg">
               Log In
             </Button>
           </Link>
           <Link href="/signUp">
-            <Button radius='full' color="success" size="lg">
+            <Button radius="full" color="success" size="lg">
               Sign Up
             </Button>
           </Link>
         </div>
-      )
-      }
-
-    </div >
-
+      )}
+    </div>
   );
 }
-

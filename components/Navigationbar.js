@@ -1,16 +1,25 @@
 'use client'
 
-import React from "react";
+import React, { useEffect } from "react";
 import Link from 'next/link';
 import { Navbar, NavbarBrand, NavbarContent, NavbarItem, NavbarMenuToggle, NavbarMenu, NavbarMenuItem, Button, Avatar } from "@nextui-org/react";
 import { ThemeSwitcher } from "./ThemeSwitcher";
 import { usePathname } from "next/navigation";
 import { useSession, signOut } from "next-auth/react";
+import { validateSession } from '@/utils/session';
 
 export default function Navigationbar() {
   const { data: session, status } = useSession();
   const [isMenuOpen, setIsMenuOpen] = React.useState(false);
   const pathname = usePathname();
+
+  useEffect(() => {
+    if (!validateSession(session, status)) {
+      return; // Exit early if the session is invalid
+    }
+
+    console.log('Session is valid');
+  }, [session, status]);
 
   const desktopMenuItems = [
     { name: "To do items list", href: "/toDoList" },
@@ -26,9 +35,10 @@ export default function Navigationbar() {
     : [];
 
   const handleSignOut = () => {
-    console.log("Signing out...");
     signOut({ callbackUrl: '/' });
   };
+
+
 
   return (
     <div>
@@ -49,7 +59,7 @@ export default function Navigationbar() {
 
         {/* Center Menu Items for Desktop */}
         <NavbarContent className="hidden sm:flex gap-4" justify="center">
-          {status === 'authenticated' &&
+          {session ? (
             desktopMenuItems.map(({ name, href }, index) => (
               <NavbarItem key={index} isActive={pathname === href}>
                 <Link
@@ -60,12 +70,13 @@ export default function Navigationbar() {
                   {name}
                 </Link>
               </NavbarItem>
-            ))}
+            ))) :
+            ""}
         </NavbarContent>
 
         {/* Right Side Items */}
         <NavbarContent justify="end">
-          {status === 'authenticated' ? (
+          {session ? (
             <>
               {/* User Icon and Sign Out */}
               <NavbarItem className="hidden lg:flex gap-2">

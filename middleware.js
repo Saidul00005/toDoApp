@@ -7,14 +7,14 @@ export function middleware(request) {
   const protectedPaths = ['/toDoList', '/addNewItem', '/history'];
 
   // Paths that should not be accessible when logged in
-  const authPaths = ['/logIn', '/signup'];
+  const authPaths = ['/logIn', '/signUp'];
 
   // Retrieve the token from cookies (used by NextAuth)
   const token = request.cookies.get('next-auth.session-token') || request.cookies.get('__Secure-next-auth.session-token');
 
   // If user is not authenticated and accessing protected paths, redirect to login
   if (protectedPaths.includes(pathname) && !token) {
-    const loginUrl = new URL('/', request.url);
+    const loginUrl = new URL('/logIn', request.url);
     loginUrl.searchParams.set('callbackUrl', request.url); // Redirect back after login
     return NextResponse.redirect(loginUrl);
   }
@@ -30,5 +30,5 @@ export function middleware(request) {
 
 // Apply middleware only to specific routes
 export const config = {
-  matcher: ['/logIn', '/signup', '/toDoList', '/addNewItem', '/history'], // Include login and signup pages in the matcher
+  matcher: ['/logIn', '/signUp', '/toDoList', '/addNewItem', '/history'], // Include login and signup pages in the matcher
 };

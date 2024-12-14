@@ -28,7 +28,7 @@ export default function ToDoDelete({ id, toDoStatus }) {
 
   return (
     <>
-      <Button onPress={onOpen} size="sm" color='warning' className={toDoStatus === 'Completed' ? 'hidden' : ''}>Delete</Button >
+      <Button onPress={onOpen} size="sm" color='warning'>Delete</Button >
       <Modal isOpen={isOpen} onOpenChange={onOpenChange} size="xs">
         <ModalContent>
           <ModalBody>
