@@ -21,11 +21,12 @@ export default function Navigationbar() {
   const mobileMenuItems = session
     ? [
       ...desktopMenuItems,
-      { name: "Sign Out", href: "#", action: () => { handleSignOut } },
+      { name: "Sign Out", href: "#", action: () => { handleSignOut() } },
     ]
     : [];
 
   const handleSignOut = () => {
+    console.log("Signing out...");
     signOut({ callbackUrl: '/' });
   };
 
@@ -89,7 +90,7 @@ export default function Navigationbar() {
           {mobileMenuItems.map(({ name, href, action }, index) => (
             <NavbarMenuItem key={index}>
               {action ? (
-                <Button onClick={action} className="w-full">
+                <Button onPress={action} className="w-full">
                   {name}
                 </Button>
               ) : (
