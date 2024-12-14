@@ -7,6 +7,7 @@ import { useRouter } from "next/navigation";
 import { signIn } from "next-auth/react";
 import { useToast } from '@/components/toastMessage/toastContext';
 
+
 const LogInPage = () => {
   const router = useRouter();
   const { showToast } = useToast();

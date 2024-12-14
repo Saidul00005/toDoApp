@@ -12,7 +12,7 @@ import { useRouter } from "next/navigation";
 import { useToast } from '@/components/toastMessage/toastContext';
 
 const AddNewItemForm = () => {
-  const { status } = useSession();
+  const { data: session } = useSession();
   const dispatch = useDispatch();
   const router = useRouter();
   const { showToast } = useToast();
@@ -42,7 +42,7 @@ const AddNewItemForm = () => {
 
   return (
     <>
-      {status === 'authenticated' ? (
+      {session ? (
         <form
           onSubmit={handleSubmit(onSubmit)}
           className="flex flex-col space-y-4 px-4 py-6 max-w-md mx-auto bg-white dark:bg-gray-800 rounded shadow-md"

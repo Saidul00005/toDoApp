@@ -6,7 +6,7 @@ import { Button } from "@nextui-org/react";
 
 export default function Home() {
 
-  const { data: session, status } = useSession();
+  const { data: session } = useSession();
 
   return (
     <div className="flex flex-col items-center justify-center min-h-screen bg-gradient-to-b from-blue-100 via-white to-green-100 dark:from-gray-800 dark:via-gray-900 dark:to-black">
@@ -19,7 +19,7 @@ export default function Home() {
       </h1>
 
       {/* Subtitle */}
-      {status === 'authenticated' ?
+      {session ?
         <p className="mb-2 text-center text-lg md:text-xl font-medium text-gray-700 dark:text-gray-300">
           Let’s begin your journey of organization.
         </p>
@@ -36,7 +36,7 @@ export default function Home() {
 
 
       {/* Call to Action Buttons */}
-      {status !== 'authenticated' && (
+      {!session && (
         <div className="flex gap-4">
           <Link href="/logIn">
             <Button radius='full' color="primary" size="lg">
