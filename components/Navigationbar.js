@@ -1,25 +1,15 @@
 'use client'
-
-import React, { useEffect } from "react";
+import React from 'react';
 import Link from 'next/link';
 import { Navbar, NavbarBrand, NavbarContent, NavbarItem, NavbarMenuToggle, NavbarMenu, NavbarMenuItem, Button, Avatar } from "@nextui-org/react";
 import { ThemeSwitcher } from "./ThemeSwitcher";
 import { usePathname } from "next/navigation";
 import { useSession, signOut } from "next-auth/react";
-import { validateSession } from '@/utils/session';
 
 export default function Navigationbar() {
-  const { data: session, status } = useSession();
+  const { data: session } = useSession();
   const [isMenuOpen, setIsMenuOpen] = React.useState(false);
   const pathname = usePathname();
-
-  useEffect(() => {
-    if (!validateSession(session, status)) {
-      return; // Exit early if the session is invalid
-    }
-
-    console.log('Session is valid');
-  }, [session, status]);
 
   const desktopMenuItems = [
     { name: "To do items list", href: "/toDoList" },

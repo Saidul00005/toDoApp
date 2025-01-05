@@ -10,41 +10,48 @@ export const authOptions = {
         password: { label: "Password", type: "password" },
       },
       async authorize(credentials) {
-        const res = await fetch(`${process.env.BACKEND_URL}/login`, {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({
-            email: credentials.email,
-            password: credentials.password,
-          }),
-        });
-
-        const user = await res.json();
-
-        if (!res.ok) {
-          throw new Error("Failed to log in: Invalid credentials or server error");
+        if (!credentials?.email || !credentials.password) {
+          throw new Error("Email and Password are required.")
         }
+        try {
+          const res = await fetch(`${process.env.BACKEND_URL}/login`, {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({
+              email: credentials.email,
+              password: credentials.password,
+            }),
+          });
 
-        if (!user.token || !user.refreshToken || !user.user) {
-          throw new Error("Invalid response from backend: Missing user, token, or refresh token");
-        }
+          const user = await res.json();
 
+          if (!res.ok) {
+            throw new Error("Failed to log in: Invalid credentials or server error");
+          }
 
-        if (res.ok && user.token && user.refreshToken && user.user) {
+          if (!user.token || !user.refreshToken || !user.user) {
+            throw new Error("Invalid response from backend: Missing user, token, or refresh token");
+          }
+
           return {
             id: user.user._id,
             email: user.user.userEmail,
             token: user.token,
             refreshToken: user.refreshToken,
           };
+        } catch (error) {
+          console.error("Authorization error:", error)
+          throw new Error(error.message || "Failed to authenticate.")
         }
-
-        return null;
       },
     }),
   ],
+  pages: {
+    signIn: '/logIn'
+  },
   session: {
     strategy: "jwt",
+    maxAge: 24 * 60 * 60  // 24 hours
   },
   callbacks: {
     async jwt({ token, user }) {
@@ -53,11 +60,11 @@ export const authOptions = {
         token.email = user.email;
         token.token = user.token;
         token.refreshToken = user.refreshToken;
-        token.accessTokenExpiry = Date.now() + 60 * 60 * 1000; // Set expiry (1 hour)
+        token.accessTokenExpiry = Date.now() + 55 * 60 * 1000; // Set expiry (55 minutes)
       }
 
       // Handle token expiration and refresh
-      if (Date.now() > token.accessTokenExpiry) {
+      if (token.accessTokenExpiry && Date.now() > token.accessTokenExpiry - 5 * 60 * 1000) {
         try {
           const res = await fetch(`${process.env.BACKEND_URL}/refresh-token`, {
             method: "POST",
@@ -71,7 +78,7 @@ export const authOptions = {
 
           const data = await res.json();
           token.token = data.accessToken; // Update access token
-          token.accessTokenExpiry = Date.now() + 60 * 60 * 1000; // Reset expiry
+          token.accessTokenExpiry = Date.now() + 55 * 60 * 1000; // Reset expiry
         } catch (error) {
           console.error("Error refreshing access token:", error);
           return {}; // Keep old token; user will need to re-login if it's invalid
@@ -89,10 +96,13 @@ export const authOptions = {
       return session;
     },
     async redirect({ url, baseUrl }) {
-      return url.startsWith(baseUrl) ? url : baseUrl;
+      if (url.startsWith("/") || url.startsWith(baseUrl)) {
+        return url;
+      }
+      return baseUrl
     },
   },
-  secret: process.env.NEXT_PUBLIC_NEXTAUTH_SECRET
+  secret: process.env.NEXTAUTH_SECRET
 };
 
 export const GET = NextAuth(authOptions);

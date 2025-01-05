@@ -1,11 +1,10 @@
 'use client'
-import React, { useEffect } from 'react'
 import ToDoItem from '@/components/toDoList/toDoItem'
 import { useDispatch, useSelector } from 'react-redux'
 import { fetchToDos, selectToDos, selectLoading, selectError } from '@/app/redux/slices/toDoSlice'
 import { Divider } from "@nextui-org/react";
 import { useSession } from "next-auth/react";
-import { validateSession } from '@/utils/session';
+import { useEffect } from 'react'
 
 
 const Loading = () => (
@@ -25,28 +24,20 @@ const ErrorMessage = ({ error }) => (
 )
 
 const Page = () => {
-  const { data: session, status } = useSession();
-  useEffect(() => {
-    if (!validateSession(session, status)) {
-      return; // Exit early if the session is invalid
-    }
-    console.log('Session is valid');
-  }, [session, status]);
+  const { data: session } = useSession();
+
   const dispatch = useDispatch()
   const toDos = useSelector(selectToDos)
   const loading = useSelector(selectLoading)
   const error = useSelector(selectError)
 
-  useEffect(() => {
-    if (!validateSession(session, status)) {
-      return; // Exit early if the session is invalid
-    }
 
+  useEffect(() => {
     if (session && toDos.length === 0) {
-      dispatch(fetchToDos())
+      dispatch(fetchToDos());
     }
-    console.log('Session is valid');
-  }, [, session, status, dispatch, toDos.length]);
+  }, [session, toDos.length, dispatch]);
+
 
   if (loading) {
     return <Loading />
