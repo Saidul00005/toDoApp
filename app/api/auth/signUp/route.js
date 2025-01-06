@@ -2,13 +2,13 @@ import { NextResponse } from "next/server";
 
 export async function POST(req) {
   try {
-    const { userEmail, password } = await req.json();
+    const { name, city, country, userEmail, password } = await req.json();
 
-    if (!userEmail || !password) {
-      return NextResponse.json({ error: "Username and password are required" }, { status: 400 });
+    if (!name || !city || !country || !userEmail || !password) {
+      return NextResponse.json({ error: "All necessary fields are required" }, { status: 400 });
     }
 
-    const body = { userEmail, password };
+    const body = { name, city, country, userEmail, password };
 
     // External API request
     const response = await fetch(`${process.env.BACKEND_URL}/signUp`, {

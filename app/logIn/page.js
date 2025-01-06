@@ -17,7 +17,7 @@ const LogInPage = () => {
     if (session) {
       router.push('/toDoList')
     }
-  })
+  }, [session, router])
 
   const { register, handleSubmit, reset, formState: { errors, isSubmitting } } = useForm({
     mode: "onChange",

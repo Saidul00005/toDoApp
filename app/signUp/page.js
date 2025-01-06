@@ -5,31 +5,82 @@ import { ErrorMessage } from "@hookform/error-message";
 import { useRouter } from "next/navigation";
 import { useToast } from '@/components/toastMessage/toastContext';
 import { useSession } from "next-auth/react";
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 
 const SignUpPage = () => {
   const { data: session } = useSession();
   const router = useRouter();
   const { showToast } = useToast();
+  const [otpSent, setOtpSent] = useState(false)
 
   useEffect(() => {
     if (session) {
       router.push('/toDoList')
     }
-  })
+  }, [session, router])
 
   const { register, handleSubmit, reset, formState: { errors, isSubmitting }, getValues } = useForm({
     mode: "onChange",
     criteriaMode: 'all',
   });
 
+  const sendOtp = async (email) => {
+    try {
+      const response = await fetch("/api/auth/sendOtp", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({ email }),
+      });
+
+      if (!response.ok) {
+        showToast("Failed to send OTP. Please try again.", 'error');
+        return;
+      }
+
+      showToast("OTP sent to your email.", 'success');
+    } catch (error) {
+      showToast("Error sending OTP", 'error');
+    }
+  };
+
   const onSubmit = async (data) => {
-    if (!data.userEmail || !data.password) {
+    if (!data.name || !data.city || !data.country || !data.userEmail || !data.password) {
       showToast("Please fill all fields before submitting.", 'error');
       return;
     }
+
+    if (!otpSent) {
+      const otpSentSuccessfully = await sendOtp(data.userEmail);
+      if (otpSentSuccessfully) {
+        setOtpSent(true);
+      }
+      return;
+    }
+
+    const userOtp = data.otp
+
+    if (!userOtp) {
+      showToast("Please enter the OTP sent to your email.", 'error');
+      return;
+    }
+
     try {
-      const response = await fetch("/api/auth/signUp", {
+      const otpResponse = await fetch("/api/auth/validateOtp", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({ email: data.userEmail, otp: userOtp }),
+      });
+
+      if (!otpResponse.ok) {
+        showToast("Invalid OTP. Please try again.", 'error');
+        return;
+      }
+
+      const signUpResponse = await fetch("/api/auth/signUp", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
@@ -37,7 +88,7 @@ const SignUpPage = () => {
         body: JSON.stringify(data),
       });
 
-      if (!response.ok) {
+      if (!signUpResponse.ok) {
         showToast("SignUp failed. Please try again.", 'error');
         return;
       }
@@ -58,6 +109,125 @@ const SignUpPage = () => {
         <h1 className="text-2xl font-bold text-center mb-6 text-gray-900 dark:text-white">
           Sign Up
         </h1>
+
+        <div className="mb-4">
+          <Input
+            label="Name"
+            placeholder="Enter your name"
+            aria-label="Name"
+            isRequired
+            className="bg-gray-100 dark:bg-gray-800 text-gray-900 dark:text-white"
+            {...register("name", { required: "Name is required." })}
+          />
+
+          <ErrorMessage
+            errors={errors}
+            name="name"
+            render={({ messages }) =>
+              messages &&
+              Object.entries(messages).map(([type, message]) => (
+                <div
+                  key={type}
+                  className="flex items-center gap-2 mt-1 px-2 py-1 rounded-md bg-red-50 dark:bg-red-900 text-red-700 dark:text-red-300 border border-red-300 dark:border-red-700"
+                >
+                  <svg
+                    xmlns="http://www.w3.org/2000/svg"
+                    viewBox="0 0 24 24"
+                    fill="currentColor"
+                    className="w-5 h-5 text-red-500 dark:text-red-300"
+                  >
+                    <path
+                      fillRule="evenodd"
+                      d="M9.401 1.676a3 3 0 015.198 0l7.447 12.924c1.237 2.147-.309 4.8-2.599 4.8H4.553c-2.29 0-3.836-2.653-2.6-4.8L9.4 1.676zM12 8.25a.75.75 0 00-.75.75v3a.75.75 0 001.5 0v-3a.75.75 0 00-.75-.75zm.75 7.5a.75.75 0 11-1.5 0 .75.75 0 011.5 0z"
+                      clipRule="evenodd"
+                    />
+                  </svg>
+                  <p className="text-sm">{message}</p>
+                </div>
+              ))
+            }
+          />
+        </div>
+
+        <div className="mb-4">
+          <Input
+            label="City"
+            placeholder="Enter your city"
+            aria-label="City"
+            isRequired
+            className="bg-gray-100 dark:bg-gray-800 text-gray-900 dark:text-white"
+            {...register("city", { required: "City is required." })}
+          />
+
+          <ErrorMessage
+            errors={errors}
+            name="city"
+            render={({ messages }) =>
+              messages &&
+              Object.entries(messages).map(([type, message]) => (
+                <div
+                  key={type}
+                  className="flex items-center gap-2 mt-1 px-2 py-1 rounded-md bg-red-50 dark:bg-red-900 text-red-700 dark:text-red-300 border border-red-300 dark:border-red-700"
+                >
+                  <svg
+                    xmlns="http://www.w3.org/2000/svg"
+                    viewBox="0 0 24 24"
+                    fill="currentColor"
+                    className="w-5 h-5 text-red-500 dark:text-red-300"
+                  >
+                    <path
+                      fillRule="evenodd"
+                      d="M9.401 1.676a3 3 0 015.198 0l7.447 12.924c1.237 2.147-.309 4.8-2.599 4.8H4.553c-2.29 0-3.836-2.653-2.6-4.8L9.4 1.676zM12 8.25a.75.75 0 00-.75.75v3a.75.75 0 001.5 0v-3a.75.75 0 00-.75-.75zm.75 7.5a.75.75 0 11-1.5 0 .75.75 0 011.5 0z"
+                      clipRule="evenodd"
+                    />
+                  </svg>
+                  <p className="text-sm">{message}</p>
+                </div>
+              ))
+            }
+          />
+        </div>
+
+        <div className="mb-4">
+          <Input
+            label="Country"
+            placeholder="Enter your country"
+            aria-label="Country"
+            isRequired
+            className="bg-gray-100 dark:bg-gray-800 text-gray-900 dark:text-white"
+            {...register("country", { required: "Country is required." })}
+          />
+
+          <ErrorMessage
+            errors={errors}
+            name="country"
+            render={({ messages }) =>
+              messages &&
+              Object.entries(messages).map(([type, message]) => (
+                <div
+                  key={type}
+                  className="flex items-center gap-2 mt-1 px-2 py-1 rounded-md bg-red-50 dark:bg-red-900 text-red-700 dark:text-red-300 border border-red-300 dark:border-red-700"
+                >
+                  <svg
+                    xmlns="http://www.w3.org/2000/svg"
+                    viewBox="0 0 24 24"
+                    fill="currentColor"
+                    className="w-5 h-5 text-red-500 dark:text-red-300"
+                  >
+                    <path
+                      fillRule="evenodd"
+                      d="M9.401 1.676a3 3 0 015.198 0l7.447 12.924c1.237 2.147-.309 4.8-2.599 4.8H4.553c-2.29 0-3.836-2.653-2.6-4.8L9.4 1.676zM12 8.25a.75.75 0 00-.75.75v3a.75.75 0 001.5 0v-3a.75.75 0 00-.75-.75zm.75 7.5a.75.75 0 11-1.5 0 .75.75 0 011.5 0z"
+                      clipRule="evenodd"
+                    />
+                  </svg>
+                  <p className="text-sm">{message}</p>
+                </div>
+              ))
+            }
+          />
+        </div>
+
+
         <div className="mb-4">
           <Input
             label="Email"
@@ -187,6 +357,46 @@ const SignUpPage = () => {
             }
           />
         </div>
+
+        {otpSent && (
+          <div className="mb-4">
+            <Input
+              label="OTP"
+              placeholder="Enter the OTP sent to your email"
+              aria-label="OTP"
+              isRequired
+              className="bg-gray-100 dark:bg-gray-800 text-gray-900 dark:text-white"
+              {...register("otp", { required: "OTP is required." })}
+            />
+            <ErrorMessage
+              errors={errors}
+              name="confirmPassword"
+              render={({ messages }) =>
+                messages &&
+                Object.entries(messages).map(([type, message]) => (
+                  <div
+                    key={type}
+                    className="flex items-center gap-2 mt-1 px-2 py-1 rounded-md bg-red-50 dark:bg-red-900 text-red-700 dark:text-red-300 border border-red-300 dark:border-red-700"
+                  >
+                    <svg
+                      xmlns="http://www.w3.org/2000/svg"
+                      viewBox="0 0 24 24"
+                      fill="currentColor"
+                      className="w-5 h-5 text-red-500 dark:text-red-300"
+                    >
+                      <path
+                        fillRule="evenodd"
+                        d="M9.401 1.676a3 3 0 015.198 0l7.447 12.924c1.237 2.147-.309 4.8-2.599 4.8H4.553c-2.29 0-3.836-2.653-2.6-4.8L9.4 1.676zM12 8.25a.75.75 0 00-.75.75v3a.75.75 0 001.5 0v-3a.75.75 0 00-.75-.75zm.75 7.5a.75.75 0 11-1.5 0 .75.75 0 011.5 0z"
+                        clipRule="evenodd"
+                      />
+                    </svg>
+                    <p className="text-sm">{message}</p>
+                  </div>
+                ))
+              }
+            />
+          </div>
+        )}
 
         <div className="flex justify-between gap-2">
           <Button
