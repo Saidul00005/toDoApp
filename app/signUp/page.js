@@ -5,13 +5,12 @@ import { ErrorMessage } from "@hookform/error-message";
 import { useRouter } from "next/navigation";
 import { useToast } from '@/components/toastMessage/toastContext';
 import { useSession } from "next-auth/react";
-import { useEffect, useState } from "react";
+import { useEffect } from "react";
 
 const SignUpPage = () => {
   const { data: session } = useSession();
   const router = useRouter();
   const { showToast } = useToast();
-  const [otpSent, setOtpSent] = useState(false)
 
   useEffect(() => {
     if (session) {
@@ -24,63 +23,9 @@ const SignUpPage = () => {
     criteriaMode: 'all',
   });
 
-  const sendOtp = async (email) => {
-    try {
-      const response = await fetch("/api/auth/sendOtp", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({ email }),
-      });
-
-      if (!response.ok) {
-        showToast("Failed to send OTP. Please try again.", 'error');
-        return;
-      }
-
-      showToast("OTP sent to your email.", 'success');
-    } catch (error) {
-      showToast("Error sending OTP", 'error');
-    }
-  };
-
   const onSubmit = async (data) => {
-    if (!data.name || !data.city || !data.country || !data.userEmail || !data.password) {
-      showToast("Please fill all fields before submitting.", 'error');
-      return;
-    }
-
-    if (!otpSent) {
-      const otpSentSuccessfully = await sendOtp(data.userEmail);
-      if (otpSentSuccessfully) {
-        setOtpSent(true);
-      }
-      return;
-    }
-
-    const userOtp = data.otp
-
-    if (!userOtp) {
-      showToast("Please enter the OTP sent to your email.", 'error');
-      return;
-    }
-
     try {
-      const otpResponse = await fetch("/api/auth/validateOtp", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({ email: data.userEmail, otp: userOtp }),
-      });
-
-      if (!otpResponse.ok) {
-        showToast("Invalid OTP. Please try again.", 'error');
-        return;
-      }
-
-      const signUpResponse = await fetch("/api/auth/signUp", {
+      const response = await fetch("/api/auth/signUp", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
@@ -88,15 +33,15 @@ const SignUpPage = () => {
         body: JSON.stringify(data),
       });
 
-      if (!signUpResponse.ok) {
-        showToast("SignUp failed. Please try again.", 'error');
+      if (!response.ok) {
+        const errorData = await response.json();
+        showToast(errorData.message || "SignUp failed. Please try again.", 'error');
         return;
       }
+      showToast("SignUp successful! Please verify your email.", 'success');
       reset();
-      router.push("/logIn"); // Redirect to login page after successful signup
-      showToast("SignUp successful! You can now log in.", 'success');
     } catch (error) {
-      showToast("Error during SignUp", 'error');
+      showToast("Error during SignUp. Please try again.", 'error');
     }
   };
 
@@ -117,7 +62,12 @@ const SignUpPage = () => {
             aria-label="Name"
             isRequired
             className="bg-gray-100 dark:bg-gray-800 text-gray-900 dark:text-white"
-            {...register("name", { required: "Name is required." })}
+            {...register("name", {
+              required: "Name is required.",
+              minLength: { value: 2, message: "Name must be at least 2 characters long." },
+              maxLength: { value: 50, message: "Name can be at most 100 characters long." },
+              pattern: { value: /^[A-Za-z\s]+$/, message: "Name can only contain letters and spaces." }
+            })}
           />
 
           <ErrorMessage
@@ -156,7 +106,12 @@ const SignUpPage = () => {
             aria-label="City"
             isRequired
             className="bg-gray-100 dark:bg-gray-800 text-gray-900 dark:text-white"
-            {...register("city", { required: "City is required." })}
+            {...register("city", {
+              required: "City is required.",
+              minLength: { value: 2, message: "City must be at least 2 characters long." },
+              maxLength: { value: 100, message: "City can be at most 100 characters long." },
+              pattern: { value: /^[A-Za-z\s]+$/, message: "City can only contain letters and spaces." }
+            })}
           />
 
           <ErrorMessage
@@ -195,7 +150,12 @@ const SignUpPage = () => {
             aria-label="Country"
             isRequired
             className="bg-gray-100 dark:bg-gray-800 text-gray-900 dark:text-white"
-            {...register("country", { required: "Country is required." })}
+            {...register("country", {
+              required: "Country is required.",
+              minLength: { value: 2, message: "Country must be at least 2 characters long." },
+              maxLength: { value: 100, message: "Country can be at most 100 characters long." },
+              pattern: { value: /^[A-Za-z\s]+$/, message: "Country can only contain letters and spaces." }
+            })}
           />
 
           <ErrorMessage
@@ -357,46 +317,6 @@ const SignUpPage = () => {
             }
           />
         </div>
-
-        {otpSent && (
-          <div className="mb-4">
-            <Input
-              label="OTP"
-              placeholder="Enter the OTP sent to your email"
-              aria-label="OTP"
-              isRequired
-              className="bg-gray-100 dark:bg-gray-800 text-gray-900 dark:text-white"
-              {...register("otp", { required: "OTP is required." })}
-            />
-            <ErrorMessage
-              errors={errors}
-              name="confirmPassword"
-              render={({ messages }) =>
-                messages &&
-                Object.entries(messages).map(([type, message]) => (
-                  <div
-                    key={type}
-                    className="flex items-center gap-2 mt-1 px-2 py-1 rounded-md bg-red-50 dark:bg-red-900 text-red-700 dark:text-red-300 border border-red-300 dark:border-red-700"
-                  >
-                    <svg
-                      xmlns="http://www.w3.org/2000/svg"
-                      viewBox="0 0 24 24"
-                      fill="currentColor"
-                      className="w-5 h-5 text-red-500 dark:text-red-300"
-                    >
-                      <path
-                        fillRule="evenodd"
-                        d="M9.401 1.676a3 3 0 015.198 0l7.447 12.924c1.237 2.147-.309 4.8-2.599 4.8H4.553c-2.29 0-3.836-2.653-2.6-4.8L9.4 1.676zM12 8.25a.75.75 0 00-.75.75v3a.75.75 0 001.5 0v-3a.75.75 0 00-.75-.75zm.75 7.5a.75.75 0 11-1.5 0 .75.75 0 011.5 0z"
-                        clipRule="evenodd"
-                      />
-                    </svg>
-                    <p className="text-sm">{message}</p>
-                  </div>
-                ))
-              }
-            />
-          </div>
-        )}
 
         <div className="flex justify-between gap-2">
           <Button

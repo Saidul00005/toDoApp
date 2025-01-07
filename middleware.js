@@ -17,6 +17,11 @@ export async function middleware(request) {
       secret: process.env.NEXTAUTH_SECRET
     })
 
+    // Redirect /api/verify-email to /emailVerificationMessage
+    if (pathname.startsWith('/api/verify-email')) {
+      return NextResponse.redirect(new URL('/emailVerificationMessage', request.url));
+    }
+
     // If user is not authenticated and accessing protected paths, redirect to login
     if (protectedPaths.some(path => pathname.startsWith(path)) && !token) {
       const loginUrl = new URL('/logIn', request.url);
@@ -53,5 +58,5 @@ export async function middleware(request) {
 
 // Apply middleware only to specific routes
 export const config = {
-  matcher: ['/logIn', '/signUp', '/toDoList', '/addNewItem', '/history', '/api/:path'], // Include login and signup pages in the matcher
+  matcher: ['/logIn', '/signUp', '/toDoList', '/addNewItem', '/history', '/api/:path*'], // Include login and signup pages in the matcher
 };
