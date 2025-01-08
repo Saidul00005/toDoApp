@@ -16,7 +16,7 @@ export async function POST(req) {
 
     // Generate verification token and link
     const verificationToken = uuidv4();
-    const verificationLink = `${process.env.NEXTAUTH_URL}/api/verify-email?token=${verificationToken}&email=${userEmail}`;
+    const verificationLink = `${process.env.NEXTAUTH_URL}/api/verifyEmail?token=${verificationToken}&email=${userEmail}`;
 
     // Set up nodemailer transporter
     const transporter = nodemailer.createTransport({

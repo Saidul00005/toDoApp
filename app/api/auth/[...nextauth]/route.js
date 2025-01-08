@@ -35,6 +35,7 @@ export const authOptions = {
 
           return {
             id: user.user._id,
+            name: user.user.name,
             email: user.user.userEmail,
             token: user.token,
             refreshToken: user.refreshToken,
@@ -57,6 +58,7 @@ export const authOptions = {
     async jwt({ token, user }) {
       if (user) {
         token.id = user.id;
+        token.name = user.name
         token.email = user.email;
         token.token = user.token;
         token.refreshToken = user.refreshToken;
@@ -90,6 +92,7 @@ export const authOptions = {
     async session({ session, token }) {
       session.user = {
         id: token.id,
+        name: token.name,
         email: token.email,
         token: token.token, // Include the latest access token
       };

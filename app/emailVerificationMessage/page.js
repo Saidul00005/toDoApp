@@ -1,46 +1,45 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useSearchParams } from 'next/navigation';
+import { Card, CardBody, CardFooter, CardHeader, Button } from "@nextui-org/react";
+import Link from 'next/link';
 
 export default function EmailVerificationMessage() {
-  const [status, setStatus] = useState('');
-  const [error, setError] = useState('');
-
-  const verifyEmail = async () => {
-    const urlParams = new URLSearchParams(window.location.search);
-    const token = urlParams.get('token');
-    const email = urlParams.get('email');
-
-    if (!token || !email) {
-      setError("Missing token or email in URL.");
-      return;
-    }
-
-    try {
-      const res = await fetch(`/api/verify-email?token=${token}&email=${email}`);
-
-      const data = await res.json();
-
-      if (!res.ok) {
-        setError(data.error || 'An error occurred during verification.');
-        return;
-      }
-
-      setStatus(data.message);
-    } catch (err) {
-      console.error('Error:', err);
-      setError('Failed to verify email.');
-    }
-  };
-
-  useEffect(() => {
-    verifyEmail();
-  }, []);
+  const searchParams = useSearchParams();
+  const successMessage = searchParams.get('success');
+  const errorMessage = searchParams.get('error');
 
   return (
-    <div>
-      {status && <p>{status}</p>}
-      {error && <p style={{ color: 'red' }}>{error}</p>}
+    <div className="flex justify-center items-center min-h-screen">
+      <Card className="w-full max-w-md">
+        <CardHeader className="flex justify-center">
+          <h1 className="text-2xl font-bold">Email Verification Status</h1>
+        </CardHeader>
+        <CardBody className="text-center">
+          {successMessage && (
+            <p className="text-green-600 mb-4">
+              {successMessage}
+            </p>
+          )}
+          {errorMessage && (
+            <p className="text-red-600 mb-4">
+              {errorMessage}
+            </p>
+          )}
+        </CardBody>
+        <CardFooter className="flex justify-center">
+          {successMessage ? (
+            <Button variant='bordered' as={Link} href="/logIn" color="primary">
+              Log In
+            </Button>
+          ) : (
+            <Button variant='bordered' as={Link} href="/signUp" color="secondary">
+              Sign Up
+            </Button>
+          )}
+        </CardFooter>
+      </Card>
     </div>
   );
 }
+

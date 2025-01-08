@@ -7,37 +7,38 @@ export async function GET(req) {
     const email = url.searchParams.get('email');
 
     if (!token || !email) {
-      return NextResponse.json({ error: "Token and Email are required." }, { status: 400 });
+      // Redirect with an error message to the verification page
+      return NextResponse.redirect(
+        `${process.env.NEXTAUTH_URL}/emailVerificationMessage?error=Token and Email are required.`,
+      );
     }
 
     // Send a request to your Express backend email verification endpoint
-    const res = await fetch(`${process.env.BACKEND_URL}/verify-email?token=${token}&email=${email}`)
+    const res = await fetch(`${process.env.BACKEND_URL}/verifyEmail?token=${token}&email=${email}`)
 
     // Forward the response back to the frontend
     const responseJson = await res.json();
 
     if (!res.ok) {
-      return NextResponse.json(responseJson, { status: res.status });
+      // Redirect with the error from the backend to the verification page
+      return NextResponse.redirect(
+        `${process.env.NEXTAUTH_URL}/emailVerificationMessage?error=${encodeURIComponent(
+          responseJson.error || "Verification failed."
+        )}`
+      );
     }
 
-    // Post the response to another page
-    const postResponse = await fetch(`${process.env.NEXTAUTH_URL}/emailVerificationMessage`, {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-      },
-      body: JSON.stringify(responseJson),
-    });
-
-    if (!postResponse.ok) {
-      const postResponseJson = await postResponse.json();
-      return NextResponse.json(postResponseJson, { status: postResponse.status });
-    }
-
-    return NextResponse.json({ message: 'Email verified and response posted successfully' }, { status: 200 });
+    // Redirect with success message to the verification page
+    return NextResponse.redirect(
+      `${process.env.NEXTAUTH_URL}/emailVerificationMessage?success=${encodeURIComponent(
+        responseJson.message || "Email verified successfully."
+      )}`
+    );
 
   } catch (err) {
     console.error("Error verifying email:", err);
-    return NextResponse.json({ error: "Internal server error" }, { status: 500 });
+    return NextResponse.redirect(
+      `${process.env.NEXTAUTH_URL}/emailVerificationMessage?error=Internal server error.`
+    );
   }
 }

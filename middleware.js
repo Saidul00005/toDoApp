@@ -11,16 +11,19 @@ export async function middleware(request) {
   // Paths that should not be accessible when logged in
   const authPaths = ['/logIn', '/signUp'];
 
+  // API paths that do not require authentication
+  const publicApiPaths = ['/api/auth/', '/api/verifyEmail'];
+
   try {
     const token = await getToken({
       req: request,
       secret: process.env.NEXTAUTH_SECRET
     })
 
-    // Redirect /api/verify-email to /emailVerificationMessage
-    if (pathname.startsWith('/api/verify-email')) {
-      return NextResponse.redirect(new URL('/emailVerificationMessage', request.url));
-    }
+    // // Redirect /api/verify-email to /emailVerificationMessage
+    // if (pathname.startsWith('/api/verify-email')) {
+    //   return NextResponse.redirect(new URL('/emailVerificationMessage', request.url));
+    // }
 
     // If user is not authenticated and accessing protected paths, redirect to login
     if (protectedPaths.some(path => pathname.startsWith(path)) && !token) {
@@ -34,7 +37,7 @@ export async function middleware(request) {
     }
 
     // For API routes, ensure they're protected
-    if (pathname.startsWith('/api/') && !pathname.startsWith('/api/auth/')) {
+    if (pathname.startsWith('/api/') && !publicApiPaths.some(path => pathname.startsWith(path))) {
       if (!token) {
         return new NextResponse(
           JSON.stringify({ error: 'Authentication required' }),
