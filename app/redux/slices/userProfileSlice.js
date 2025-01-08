@@ -7,6 +7,7 @@ export const fetchUserProfile = createAsyncThunk('/userProfile', async () => {
     throw new Error('Failed to fetch user profile.');
   }
   const result = await response.json();
+  console.log("Fetched user profile:", result.data.data)
   return result.data.data;
 });
 

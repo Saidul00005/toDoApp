@@ -1,5 +1,7 @@
 import NextAuth from "next-auth";
 import CredentialsProvider from "next-auth/providers/credentials";
+import { signOut } from "next-auth/react";
+import { NextResponse } from "next/server";
 
 export const authOptions = {
   providers: [
@@ -62,11 +64,11 @@ export const authOptions = {
         token.email = user.email;
         token.token = user.token;
         token.refreshToken = user.refreshToken;
-        token.accessTokenExpiry = Date.now() + 55 * 60 * 1000; // Set expiry (55 minutes)
+        token.accessTokenExpiry = Date.now() + 50 * 60 * 1000; // Set expiry (50 minutes)
       }
 
       // Handle token expiration and refresh
-      if (token.accessTokenExpiry && Date.now() > token.accessTokenExpiry - 5 * 60 * 1000) {
+      if (token.accessTokenExpiry && Date.now() > token.accessTokenExpiry - 10 * 60 * 1000) {
         try {
           const res = await fetch(`${process.env.BACKEND_URL}/refresh-token`, {
             method: "POST",
@@ -75,15 +77,22 @@ export const authOptions = {
           });
 
           if (!res.ok) {
-            throw new Error("Failed to refresh access token");
+            const errorResponse = await res.json(); // Attempt to parse the error details
+            const errorMessage = errorResponse?.error || res.statusText || "Unknown error";
+            throw new Error(`Failed to refresh access token: ${errorMessage} (Status: ${res.status})`);
           }
 
           const data = await res.json();
           token.token = data.accessToken; // Update access token
-          token.accessTokenExpiry = Date.now() + 55 * 60 * 1000; // Reset expiry
+          token.accessTokenExpiry = Date.now() + 50 * 60 * 1000; // Reset expiry
         } catch (error) {
           console.error("Error refreshing access token:", error);
-          return {}; // Keep old token; user will need to re-login if it's invalid
+          // Clear token and session information on failure
+          token = {};
+          // Sign out from the session
+          await signOut({ redirect: false });
+          // Redirect to login page
+          return NextResponse.redirect('/logIn');
         }
       }
 

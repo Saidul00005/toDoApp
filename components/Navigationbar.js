@@ -80,7 +80,7 @@ export default function Navigationbar() {
                   </DropdownTrigger>
                   <DropdownMenu aria-label="User menu actions">
                     <DropdownItem key="profile">
-                      <Link href="/profile" className="w-full">
+                      <Link href="/viewProfile" className="w-full">
                         View Profile
                       </Link>
                     </DropdownItem>

@@ -7,7 +7,7 @@ export async function GET(req) {
     const session = await getServerSession(authOptions);
 
     // Check if the session is valid and the user is authenticated
-    if (!session || !session.user?.token) {
+    if (!session || !session.user.token) {
       return NextResponse.json({ error: "Unauthorized access" }, { status: 401 });
     }
 
