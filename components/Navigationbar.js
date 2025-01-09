@@ -1,7 +1,7 @@
 'use client'
 import React from 'react';
 import Link from 'next/link';
-import { Navbar, NavbarBrand, NavbarContent, NavbarItem, NavbarMenuToggle, NavbarMenu, NavbarMenuItem, Button, Avatar, Dropdown, DropdownItem, DropdownTrigger, DropdownMenu } from "@nextui-org/react";
+import { Navbar, NavbarBrand, NavbarContent, NavbarItem, NavbarMenuToggle, NavbarMenu, NavbarMenuItem, Button, Avatar } from "@nextui-org/react";
 import { ThemeSwitcher } from "./ThemeSwitcher";
 import { usePathname } from "next/navigation";
 import { useSession, signOut } from "next-auth/react";
@@ -20,7 +20,7 @@ export default function Navigationbar() {
   const mobileMenuItems = session
     ? [
       ...desktopMenuItems,
-      { name: "View Profile", href: "/profile" },
+      { name: "View Profile", href: "/viewProfile" },
       { name: "Sign Out", href: "#", action: () => { handleSignOut() } },
     ]
     : [];
@@ -71,13 +71,13 @@ export default function Navigationbar() {
             <>
               {/* User Icon and Name with Dropdown */}
               <NavbarItem className="hidden lg:flex">
-                <Dropdown>
-                  <DropdownTrigger>
-                    <Button variant="light" className="py-0 px-1">
-                      <Avatar src={session.user.image} alt={session.user.name} size="sm" className="mr-2" />
-                      <span>{session.user.name}</span>
-                    </Button>
-                  </DropdownTrigger>
+                {/* <Dropdown> 
+                <DropdownTrigger> */}
+                <Button as={Link} href='/viewProfile' variant="light" className="py-0 px-1">
+                  <Avatar src={session.user.image} alt={session.user.name} size="sm" className="mr-2" />
+                  <span>{session.user.name}</span>
+                </Button>
+                {/* </DropdownTrigger>
                   <DropdownMenu aria-label="User menu actions">
                     <DropdownItem key="profile">
                       <Link href="/viewProfile" className="w-full">
@@ -88,7 +88,7 @@ export default function Navigationbar() {
                       Sign Out
                     </DropdownItem>
                   </DropdownMenu>
-                </Dropdown>
+                </Dropdown> */}
               </NavbarItem>
             </>
           ) : ''}

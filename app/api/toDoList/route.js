@@ -25,7 +25,6 @@ export async function GET(req) {
     }
 
     const todos = await response.json();
-    console.log(todos)
 
     return NextResponse.json({ message: 'Fetched successfully.', data: todos }, { status: 200 });
   } catch (error) {
