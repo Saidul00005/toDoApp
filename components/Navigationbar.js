@@ -1,25 +1,15 @@
 'use client'
-
-import React, { useEffect } from "react";
+import React from 'react';
 import Link from 'next/link';
 import { Navbar, NavbarBrand, NavbarContent, NavbarItem, NavbarMenuToggle, NavbarMenu, NavbarMenuItem, Button, Avatar } from "@nextui-org/react";
 import { ThemeSwitcher } from "./ThemeSwitcher";
 import { usePathname } from "next/navigation";
 import { useSession, signOut } from "next-auth/react";
-import { validateSession } from '@/utils/session';
 
 export default function Navigationbar() {
-  const { data: session, status } = useSession();
+  const { data: session } = useSession();
   const [isMenuOpen, setIsMenuOpen] = React.useState(false);
   const pathname = usePathname();
-
-  useEffect(() => {
-    if (!validateSession(session, status)) {
-      return; // Exit early if the session is invalid
-    }
-
-    console.log('Session is valid');
-  }, [session, status]);
 
   const desktopMenuItems = [
     { name: "To do items list", href: "/toDoList" },
@@ -30,6 +20,7 @@ export default function Navigationbar() {
   const mobileMenuItems = session
     ? [
       ...desktopMenuItems,
+      { name: "View Profile", href: "/viewProfile" },
       { name: "Sign Out", href: "#", action: () => { handleSignOut() } },
     ]
     : [];
@@ -78,19 +69,29 @@ export default function Navigationbar() {
         <NavbarContent justify="end">
           {session ? (
             <>
-              {/* User Icon and Sign Out */}
-              <NavbarItem className="hidden lg:flex gap-2">
-                <Avatar src={session.user.image} alt={session.user.name} size="sm" />
-                <Button
-                  variant="flat"
-                  onPress={handleSignOut}
-                >
-                  Sign Out
+              {/* User Icon and Name with Dropdown */}
+              <NavbarItem className="hidden lg:flex">
+                {/* <Dropdown> 
+                <DropdownTrigger> */}
+                <Button as={Link} href='/viewProfile' variant="light" className="py-0 px-1">
+                  <Avatar src={session.user.image} alt={session.user.name} size="sm" className="mr-2" />
+                  <span>{session.user.name}</span>
                 </Button>
+                {/* </DropdownTrigger>
+                  <DropdownMenu aria-label="User menu actions">
+                    <DropdownItem key="profile">
+                      <Link href="/viewProfile" className="w-full">
+                        View Profile
+                      </Link>
+                    </DropdownItem>
+                    <DropdownItem key="signout" color="danger" onPress={handleSignOut}>
+                      Sign Out
+                    </DropdownItem>
+                  </DropdownMenu>
+                </Dropdown> */}
               </NavbarItem>
             </>
           ) : ''}
-
           <NavbarItem>
             <ThemeSwitcher />
           </NavbarItem>

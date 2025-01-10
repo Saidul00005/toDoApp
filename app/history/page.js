@@ -1,11 +1,10 @@
 'use client'
-import React, { useEffect } from 'react'
 import ToDoItem from '@/components/toDoList/toDoItem'
 import { useDispatch, useSelector } from 'react-redux'
 import { fetchToDos, selectToDos, selectLoading, selectError } from '@/app/redux/slices/toDoSlice'
 import { Divider } from "@nextui-org/react";
 import { useSession } from "next-auth/react";
-import { validateSession } from '@/utils/session';
+import { useEffect } from 'react';
 
 const Loading = () => (
   <div className="flex flex-col items-center justify-center h-[50vh]">
@@ -24,22 +23,17 @@ const ErrorMessage = ({ error }) => (
 )
 
 const Page = () => {
-  const { data: session, status } = useSession();
+  const { data: session } = useSession();
   const dispatch = useDispatch()
   const toDos = useSelector(selectToDos)
   const loading = useSelector(selectLoading)
   const error = useSelector(selectError)
 
   useEffect(() => {
-    if (!validateSession(session, status)) {
-      return; // Exit early if the session is invalid
-    }
-
     if (session && toDos.length === 0) {
-      dispatch(fetchToDos())
+      dispatch(fetchToDos());
     }
-    console.log('Session is valid');
-  }, [, session, status, dispatch, toDos.length]);
+  }, [session, toDos.length, dispatch]);
 
   if (loading) {
     return <Loading />
@@ -77,39 +71,37 @@ const Page = () => {
           Reflect on tasks from days gone by, A trail of dreams beneath the sky.
         </p>
       </div>
-      {session &&
-        <div className="p-6">
-          {Object.keys(groupedToDos).length > 0 ? (
-            Object.keys(groupedToDos).map((date, index) => (
-              <div key={index} className="pt-2">
-                <Divider className="my-1" />
-                <h5 className="text-xl font-semibold text-center">{date}</h5>
-                <Divider className="my-1" />
-                <div className="grid grid-cols-1 items-center justify-items-center md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4 mt-6">
-                  {groupedToDos[date].map((toDo, index) => (
-                    <ToDoItem
-                      key={index}
-                      id={toDo._id}
-                      name={toDo.toDoName}
-                      description={toDo.toDoDescription}
-                      status={toDo.toDoStatus}
-                      act={toDo.toDoACT}
-                      creationDate={toDo.toDoCreationDate}
-                      editionDate={toDo.toDoEditionDate}
-                    />
-                  ))}
-                </div>
+      <div className="p-6">
+        {Object.keys(groupedToDos).length > 0 ? (
+          Object.keys(groupedToDos).map((date, index) => (
+            <div key={index} className="pt-2">
+              <Divider className="my-1" />
+              <h5 className="text-xl font-semibold text-center">{date}</h5>
+              <Divider className="my-1" />
+              <div className="grid grid-cols-1 items-center justify-items-center md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4 mt-6">
+                {groupedToDos[date].map((toDo, index) => (
+                  <ToDoItem
+                    key={index}
+                    id={toDo._id}
+                    name={toDo.toDoName}
+                    description={toDo.toDoDescription}
+                    status={toDo.toDoStatus}
+                    act={toDo.toDoACT}
+                    creationDate={toDo.toDoCreationDate}
+                    editionDate={toDo.toDoEditionDate}
+                  />
+                ))}
               </div>
-            ))
-          ) : (
-            <div className="flex flex-col items-center justify-center h-[50vh]">
-              <p className="text-md md:text-lg font-normal text-gray-500 dark:text-gray-400">
-                No completed to-do available.
-              </p>
             </div>
-          )}
-        </div>
-      }
+          ))
+        ) : (
+          <div className="flex flex-col items-center justify-center h-[50vh]">
+            <p className="text-md md:text-lg font-normal text-gray-500 dark:text-gray-400">
+              No completed to-do available.
+            </p>
+          </div>
+        )}
+      </div>
     </>
   );
 }
