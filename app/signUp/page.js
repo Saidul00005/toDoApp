@@ -148,7 +148,7 @@ const SignUpPage = () => {
               isRequired
               className="bg-gray-100 dark:bg-gray-800 text-gray-900 dark:text-white"
               {...register("confirmPassword", {
-                required: "Confirm Password is required",
+                required: "Kindly confirm password.",
                 validate: value =>
                   value === getValues("password") || "Passwords do not match",
               })}
