@@ -333,7 +333,7 @@ const SignUpPage = () => {
             isLoading={isSubmitting}
             className="w-full"
           >
-            Sign Up
+            Sign-Up
           </Button>
         </div>
       </form>
