@@ -4,7 +4,7 @@ import { useSearchParams } from 'next/navigation';
 import { Card, CardBody, CardFooter, CardHeader, Button } from "@nextui-org/react";
 import Link from 'next/link';
 
-export default function EmailVerificationContent() {
+function EmailVerificationContent() {
   const searchParams = useSearchParams();
   const successMessage = searchParams.get('success');
   const errorMessage = searchParams.get('error');
