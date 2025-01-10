@@ -1,20 +1,10 @@
 "use client";
-
 import { useSession } from "next-auth/react";
 import Link from "next/link";
 import { Button } from "@nextui-org/react";
-import { validateSession } from "@/utils/session";
-import { useEffect } from "react";
 
 export default function Home() {
-  const { data: session, status } = useSession();
-  useEffect(() => {
-    if (!validateSession(session, status)) {
-      return; // Exit early if the session is invalid
-    }
-
-    console.log('Session is valid');
-  }, [session, status]);
+  const { data: session } = useSession();
 
   return (
     <div className="flex flex-col items-center justify-center min-h-screen bg-gradient-to-b from-blue-100 via-white to-green-100 dark:from-gray-800 dark:via-gray-900 dark:to-black">

@@ -5,7 +5,7 @@ import { useState } from 'react';
 import { useToast } from '@/components/toastMessage/toastContext';
 
 
-export default function ToDoDelete({ id, toDoStatus }) {
+export default function ToDoDelete({ id }) {
   const { isOpen, onOpen, onOpenChange, onClose } = useDisclosure();
   const dispatch = useDispatch();
   const { showToast } = useToast();
