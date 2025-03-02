@@ -4,7 +4,7 @@ import Link from "next/link";
 import { Button } from "@nextui-org/react";
 
 export default function Home() {
-  const { data: session } = useSession();
+  const { status } = useSession();
 
   return (
     <div className="flex flex-col items-center justify-center min-h-screen bg-gradient-to-b from-blue-100 via-white to-green-100 dark:from-gray-800 dark:via-gray-900 dark:to-black">
@@ -17,7 +17,7 @@ export default function Home() {
       </h1>
 
       {/* Subtitle */}
-      {session ? (
+      {status === 'authenticated' ? (
         <p className="mb-2 text-center text-lg md:text-xl font-medium text-gray-700 dark:text-gray-300">
           Let’s begin your journey of organization.
         </p>
@@ -33,7 +33,7 @@ export default function Home() {
       )}
 
       {/* Call to Action Buttons */}
-      {!session && (
+      {status !== 'authenticated' && (
         <div className="flex gap-4">
           <Link href="/logIn">
             <Button radius="full" color="primary" size="lg">

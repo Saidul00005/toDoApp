@@ -4,9 +4,13 @@ import { editToDo, selectToDos } from '@/app/redux/slices/toDoSlice';
 import { Button, Modal, ModalContent, ModalHeader, ModalBody, ModalFooter, Input, Textarea, useDisclosure } from "@nextui-org/react";
 import { useToast } from '@/components/toastMessage/toastContext';
 import { useForm, Controller } from 'react-hook-form';
-import { ErrorMessage } from "@hookform/error-message"
+import { ErrorMessage } from "@hookform/error-message";
+import { useSession } from "next-auth/react";
+import { Edit } from 'lucide-react';
+import { Tooltip } from "@nextui-org/react";
 
 const ToDoEdit = ({ id, status }) => {
+  const { status: sessionStatus } = useSession()
   const { isOpen, onOpen, onOpenChange, onClose } = useDisclosure();
 
   const dispatch = useDispatch();
@@ -33,6 +37,11 @@ const ToDoEdit = ({ id, status }) => {
 
 
   const onSubmit = async (data) => {
+    if (sessionStatus !== "authenticated") {
+      showToast("Please log in to edit to-do.", "error");
+      return;
+    }
+
     const toDoACTUtc = new Date(data.toDoACT).toISOString();
     const updatedToDo = {
       toDoName: data.toDoName,
@@ -70,7 +79,9 @@ const ToDoEdit = ({ id, status }) => {
 
   return (
     <>
-      <Button onPress={handleModalOpen} size='sm' color='secondary' className={status === 'Completed' ? 'hidden' : ''}>Edit</Button>
+      <Tooltip content="Edit" placement="top" color="secondary">
+        <Button onPress={handleModalOpen} size='sm' color='secondary' className={status === 'Completed' ? 'hidden' : ''}> <Edit size={16} /> </Button>
+      </Tooltip>
       <Modal isDismissable={false} isKeyboardDismissDisabled={true} scrollBehavior='inside' isOpen={isOpen} onOpenChange={onOpenChange}>
         <ModalContent>
           <ModalHeader className="flex flex-col gap-1">Update To-Do</ModalHeader>

@@ -2,10 +2,12 @@
 
 import { useDispatch, useSelector } from 'react-redux'
 import { selectUserProfile, selectUserProfileLoading, selectUserProfileError, fetchUserProfile } from '@/app/redux/slices/userProfileSlice'
-import { useSession, signOut } from "next-auth/react"
+import { useSession } from "next-auth/react"
 import { useEffect, useState } from 'react'
 import { Card, CardBody, CardHeader, Button } from "@nextui-org/react"
 import UpdateProfileForm from '@/components/viewProfile/UpdateProfileForm'
+import { useRouter } from "next/navigation"
+
 
 const Loading = () => (
   <div className="flex flex-col items-center justify-center h-[50vh]">
@@ -24,7 +26,13 @@ const ErrorMessage = ({ error }) => (
 )
 
 const Page = () => {
-  const { data: session } = useSession()
+  const router = useRouter()
+  const { status } = useSession({
+    required: true,
+    onUnauthenticated() {
+      router.push("/")
+    },
+  })
   const dispatch = useDispatch()
   const profile = useSelector(selectUserProfile)
   const loading = useSelector(selectUserProfileLoading)
@@ -33,15 +41,10 @@ const Page = () => {
   const [isEditing, setIsEditing] = useState(false);
 
   useEffect(() => {
-    if (session && !profile) {
+    if (status === 'authenticated' && !profile) {
       dispatch(fetchUserProfile())
     }
-  }, [session, dispatch, profile])
-
-  const handleSignOut = () => {
-    signOut({ callbackUrl: '/' });
-  };
-
+  }, [status, dispatch, profile])
 
   if (loading) {
     return <Loading />
@@ -55,14 +58,11 @@ const Page = () => {
     <div className="flex justify-center items-center min-h-screen p-4">
       <Card className="w-full max-w-md" isBlurred>
         <CardHeader className="flex justify-between items-center">
-          <h1 className="text-2xl font-bold">User Profile</h1>
+          <h1 className="text-xl font-bold">User Profile</h1>
           {!isEditing && (
             <div className='flex gap-2'>
-              <Button color="primary" variant='flat' size='md' onPress={() => setIsEditing(true)}>
+              <Button color="primary" variant='flat' size='sm' onPress={() => setIsEditing(true)}>
                 Update Profile
-              </Button>
-              <Button color="danger" variant='flat' size='md' onPress={handleSignOut}>
-                Sign Out
               </Button>
             </div>
           )}
@@ -70,10 +70,10 @@ const Page = () => {
         <CardBody>
           {!isEditing ? (
             <div className="text-md space-y-4">
-              <p><strong>Name: </strong>{profile.name}</p>
-              <p><strong>Email: </strong>{profile.userEmail}</p>
-              <p><strong>City: </strong>{profile.city}</p>
-              <p><strong>Country: </strong>{profile.country}</p>
+              <p className='text-sm'><strong>Name: </strong>{profile.name}</p>
+              <p className='text-sm'><strong>Email: </strong>{profile.userEmail}</p>
+              <p className='text-sm'><strong>City: </strong>{profile.city}</p>
+              <p className='text-sm'><strong>Country: </strong>{profile.country}</p>
             </div>
           ) : (
             <UpdateProfileForm profile={profile} setIsEditing={setIsEditing} />

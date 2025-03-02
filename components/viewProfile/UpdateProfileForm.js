@@ -5,8 +5,10 @@ import { Button, Input } from "@nextui-org/react"
 import { useForm, Controller } from "react-hook-form"
 import { useToast } from '@/components/toastMessage/toastContext';
 import { ErrorMessage } from "@hookform/error-message"
+import { useSession } from "next-auth/react"
 
 const UpdateProfileForm = ({ profile, setIsEditing }) => {
+  const { status } = useSession()
   const dispatch = useDispatch()
   const { showToast } = useToast();
 
@@ -29,6 +31,11 @@ const UpdateProfileForm = ({ profile, setIsEditing }) => {
   }, [profile, setValue])
 
   const onSubmit = (data) => {
+    if (status !== "authenticated") {
+      showToast("Please log in to update profile.", "error");
+      return;
+    }
+
     const { isEditing, ...updatedData } = data;
     const updatedUserProfile = { ...updatedData };
     dispatch(updateUserProfile(updatedUserProfile))

@@ -1,14 +1,30 @@
 import { createSlice, createAsyncThunk } from '@reduxjs/toolkit'
 
-export const fetchToDos = createAsyncThunk('/toDoList', async () => {
-  const response = await fetch('/api/toDoList')
+export const fetchToDos = createAsyncThunk('/toDoList', async ({ page = 1 }) => {
+  const response = await fetch(`/api/toDoList?page=${page}&limit=20`)
   if (!response.ok) {
     throw new Error('Failed to fetch todos');
   }
   const result = await response.json()
   // console.log('Fetched ToDos from Api:', result.data.data);
-  return result.data.data
+  return {
+    data: result.data.data,
+    currentPage: page,
+    hasMore: result.data.hasMore
+  };
 })
+
+export const searchToDos = createAsyncThunk(
+  'searchTodos',
+  async (query) => {
+    const response = await fetch(`/api/toDoList/search?q=${query}`);
+    if (!response.ok) {
+      throw new Error('Search failed');
+    }
+    const result = await response.json();
+    return result.data.data;
+  }
+);
 
 
 export const addToDo = createAsyncThunk('/addNewItem', async (newToDo) => {
@@ -56,20 +72,41 @@ const toDoSlice = createSlice({
   name: 'toDos',
   initialState: {
     items: [],
+    searchResults: [],
+    currentPage: 1,
+    hasMore: true,
     loading: false,
-    error: null
+    isLoadingMore: false,
+    isSearchLoading: false,
+    error: null,
   },
-  reducers: {},
+  reducers: {
+    resetToDoItems: (state) => {
+      state.items = [];
+    },
+    resetSearchResults: (state) => {
+      state.searchResults = [];
+    },
+  },
   extraReducers: (builder) => {
-    builder.addCase(fetchToDos.pending, (state) => {
-      state.loading = true;
+    builder.addCase(fetchToDos.pending, (state, action) => {
+      const isInitialLoad = action.meta.arg.page === 1;
+      state.loading = isInitialLoad;
+      state.isLoadingMore = !isInitialLoad;
       state.error = null
     }).addCase(fetchToDos.fulfilled, (state, action) => {
       // console.log('Fetched ToDos from API:', action.payload);
       state.loading = false;
-      state.items = action.payload; // Set fetched todos
+      state.isLoadingMore = false;
+      state.items = action.payload.currentPage === 1
+        ? action.payload.data
+        : [...state.items, ...action.payload.data];// Set fetched todos
+      state.currentPage = action.payload.currentPage;
+      state.hasMore = action.payload.hasMore;
+      state.error = null
     }).addCase(fetchToDos.rejected, (state, action) => {
       state.loading = false;
+      state.isLoadingMore = false;
       state.error = action.error.message;
     }).addCase(addToDo.fulfilled, (state, action) => {
       state.items.push(action.payload); // Add the new todo
@@ -88,14 +125,25 @@ const toDoSlice = createSlice({
       }
     }).addCase(deleteToDo.fulfilled, (state, action) => {
       state.items = state.items.filter((item) => item._id !== action.payload)
-    })
+    }).addCase(searchToDos.pending, (state) => {
+      state.isSearchLoading = true;
+    }).addCase(searchToDos.fulfilled, (state, action) => {
+      state.isSearchLoading = false;
+      state.searchResults = action.payload;
+    }).addCase(searchToDos.rejected, (state) => {
+      state.isSearchLoading = false;
+    });
   }
 
 })
 
-export const { resetError } = toDoSlice.actions
+export const { resetError, resetSearchResults, resetToDoItems } = toDoSlice.actions
 export const selectToDos = (state) => state.toDos.items
 export const selectLoading = (state) => state.toDos.loading
 export const selectError = (state) => state.toDos.error
+export const selectHasMore = (state) => state.toDos.hasMore;
+export const selectCurrentPage = (state) => state.toDos.currentPage;
+export const selectIsLoadingMore = (state) => state.toDos.isLoadingMore;
+export const selectIsSearchLoading = (state) => state.toDos.isSearchLoading;
 
 export default toDoSlice.reducer;

@@ -8,15 +8,15 @@ import { useSession } from "next-auth/react";
 import { useEffect } from "react";
 
 const SignUpPage = () => {
-  const { data: session } = useSession();
+  const { status } = useSession();
   const router = useRouter();
   const { showToast } = useToast();
 
   useEffect(() => {
-    if (session) {
+    if (status === 'authenticated') {
       router.push('/toDoList')
     }
-  }, [session, router])
+  }, [status, router])
 
   const { register, handleSubmit, reset, formState: { errors, isSubmitting }, getValues } = useForm({
     mode: "onChange",

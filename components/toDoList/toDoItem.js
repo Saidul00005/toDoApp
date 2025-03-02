@@ -50,7 +50,7 @@ const ToDoItem = ({ id, name, description, status, act, creationDate, editionDat
         <CardBody>
           <div className='py-1'>
             <p className="text-tiny uppercase font-bold">Description</p>
-            <p>{description}</p>
+            <p className='text-sm'>{description}</p>
           </div>
           <div className='py-1'>
             <p className="text-tiny uppercase font-bold">Status</p>
@@ -58,7 +58,7 @@ const ToDoItem = ({ id, name, description, status, act, creationDate, editionDat
           </div>
           <div className='py-1'>
             <p className="text-tiny uppercase font-bold">Assumptive completion time</p>
-            <p className={isDeadlineOver ? 'text-red-500 font-bold' : ''}>
+            <p className={isDeadlineOver ? 'text-red-500 font-bold text-sm' : 'text-sm'}>
               {isDeadlineOver ? 'Deadline over' : formattedActDate}
             </p>
           </div>

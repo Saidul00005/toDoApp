@@ -3,9 +3,13 @@ import { useDispatch } from 'react-redux';
 import { deleteToDo } from '@/app/redux/slices/toDoSlice';
 import { useState } from 'react';
 import { useToast } from '@/components/toastMessage/toastContext';
+import { useSession } from "next-auth/react"
+import { Trash } from 'lucide-react';
+import { Tooltip } from "@nextui-org/react";
 
 
 export default function ToDoDelete({ id }) {
+  const { status } = useSession()
   const { isOpen, onOpen, onOpenChange, onClose } = useDisclosure();
   const dispatch = useDispatch();
   const { showToast } = useToast();
@@ -13,6 +17,10 @@ export default function ToDoDelete({ id }) {
 
 
   const handleDelete = async () => {
+    if (status !== "authenticated") {
+      showToast("Please log in to delete to-do.", "error");
+      return;
+    }
     setIsLoading(true);
     try {
       await dispatch(deleteToDo(id)).unwrap();
@@ -28,7 +36,9 @@ export default function ToDoDelete({ id }) {
 
   return (
     <>
-      <Button onPress={onOpen} size="sm" color='warning'>Delete</Button >
+      <Tooltip content="Delete" placement="top" color="warning">
+        <Button onPress={onOpen} size="sm" color='warning'><Trash size={16} /> </Button >
+      </Tooltip>
       <Modal isOpen={isOpen} onOpenChange={onOpenChange} size="xs">
         <ModalContent>
           <ModalBody>

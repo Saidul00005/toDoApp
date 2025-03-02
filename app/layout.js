@@ -6,6 +6,8 @@ import { Providers } from "./providers";
 import ReduxProvider from "./redux/reduxProvider";
 import NextAuthProvider from "@/components/nextauth/sessionProvider";
 import { ToastProvider } from '@/components/toastMessage/toastContext';
+import { getServerSession } from 'next-auth';
+import { authOptions } from '@/app/api/auth/[...nextauth]/route';
 
 const roboto = Roboto({
   weight: ['400', '700'],
@@ -17,7 +19,8 @@ export const metadata = {
   description: "Add and track to do item.",
 };
 
-export default function RootLayout({ children }) {
+export default async function RootLayout({ children }) {
+  const session = await getServerSession(authOptions);
   return (
     <html lang="en" suppressHydrationWarning>
       <head>
@@ -27,7 +30,7 @@ export default function RootLayout({ children }) {
         className={`${roboto.className} antialiased`}
       >
         <Providers>
-          <NextAuthProvider>
+          <NextAuthProvider session={session}>
             <ReduxProvider>
               <div className="flex flex-col min-h-screen">
                 <Navigationbar />

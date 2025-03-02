@@ -1,23 +1,23 @@
 'use client'
 import React from 'react';
 import Link from 'next/link';
-import { Navbar, NavbarBrand, NavbarContent, NavbarItem, NavbarMenuToggle, NavbarMenu, NavbarMenuItem, Button, Avatar } from "@nextui-org/react";
+import { Navbar, NavbarBrand, NavbarContent, NavbarItem, NavbarMenuToggle, NavbarMenu, NavbarMenuItem, Button, Avatar, Dropdown, DropdownTrigger, DropdownMenu, DropdownItem } from "@nextui-org/react";
 import { ThemeSwitcher } from "./ThemeSwitcher";
 import { usePathname } from "next/navigation";
 import { useSession, signOut } from "next-auth/react";
+import { ChevronDown } from "lucide-react";
 
 export default function Navigationbar() {
-  const { data: session } = useSession();
+  const { data: session, status } = useSession();
   const [isMenuOpen, setIsMenuOpen] = React.useState(false);
   const pathname = usePathname();
 
   const desktopMenuItems = [
     { name: "To do items list", href: "/toDoList" },
-    { name: "Add new item", href: "/addNewItem" },
-    { name: "History", href: "/history" },
+    { name: "Add new item", href: "/addNewItem" }
   ];
 
-  const mobileMenuItems = session
+  const mobileMenuItems = status === "authenticated"
     ? [
       ...desktopMenuItems,
       { name: "View Profile", href: "/viewProfile" },
@@ -33,7 +33,7 @@ export default function Navigationbar() {
 
   return (
     <div>
-      <Navbar onMenuOpenChange={setIsMenuOpen}>
+      <Navbar onMenuOpenChange={setIsMenuOpen} isMenuOpen={isMenuOpen}>
         <NavbarContent>
           <NavbarMenuToggle
             aria-label={isMenuOpen ? "Close menu" : "Open menu"}
@@ -50,7 +50,7 @@ export default function Navigationbar() {
 
         {/* Center Menu Items for Desktop */}
         <NavbarContent className="hidden sm:flex gap-4" justify="center">
-          {session ? (
+          {status === 'authenticated' ? (
             desktopMenuItems.map(({ name, href }, index) => (
               <NavbarItem key={index} isActive={pathname === href}>
                 <Link
@@ -67,17 +67,18 @@ export default function Navigationbar() {
 
         {/* Right Side Items */}
         <NavbarContent justify="end">
-          {session ? (
+          {status === 'authenticated' ? (
             <>
               {/* User Icon and Name with Dropdown */}
-              <NavbarItem className="hidden lg:flex">
-                {/* <Dropdown> 
-                <DropdownTrigger> */}
-                <Button as={Link} href='/viewProfile' variant="light" className="py-0 px-1">
-                  <Avatar src={session.user.image} alt={session.user.name} size="sm" className="mr-2" />
-                  <span>{session.user.name}</span>
-                </Button>
-                {/* </DropdownTrigger>
+              <NavbarItem className="hidden md:flex">
+                <Dropdown>
+                  <DropdownTrigger>
+                    <Button variant="light" className="py-0 px-.5">
+                      <Avatar src={session.user.image} alt={session.user.name} size="sm" className="mr-2" />
+                      <span>{session.user.name}</span>
+                      <ChevronDown size={16} className="ml-1" />
+                    </Button>
+                  </DropdownTrigger>
                   <DropdownMenu aria-label="User menu actions">
                     <DropdownItem key="profile">
                       <Link href="/viewProfile" className="w-full">
@@ -88,7 +89,7 @@ export default function Navigationbar() {
                       Sign Out
                     </DropdownItem>
                   </DropdownMenu>
-                </Dropdown> */}
+                </Dropdown>
               </NavbarItem>
             </>
           ) : ''}
@@ -102,13 +103,14 @@ export default function Navigationbar() {
           {mobileMenuItems.map(({ name, href, action }, index) => (
             <NavbarMenuItem key={index}>
               {action ? (
-                <Button onPress={action} className="w-full">
+                <Button onPress={action} size='sm' className="w-full">
                   {name}
                 </Button>
               ) : (
                 <Link
                   href={href}
-                  className={`w-full ${pathname === href ? "text-primary font-bold" : "text-foreground"}`}
+                  className={`text-sm w-full ${pathname === href ? "text-primary font-bold" : "text-foreground"}`}
+                  onClick={() => setIsMenuOpen(false)}
                 >
                   {name}
                 </Link>

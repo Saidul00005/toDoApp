@@ -3,8 +3,11 @@ import { useDispatch } from 'react-redux';
 import { editToDoStatus } from '@/app/redux/slices/toDoSlice';
 import { useState } from "react";
 import { useToast } from '@/components/toastMessage/toastContext';
+import { useSession } from "next-auth/react"
+import { CheckCircle, Clock } from 'lucide-react';
 
 export default function ToDoStatusChange({ id, toDoStatus }) {
+  const { status } = useSession()
   const { isOpen, onOpen, onOpenChange, onClose } = useDisclosure();
   const dispatch = useDispatch();
   const { showToast } = useToast();
@@ -13,6 +16,11 @@ export default function ToDoStatusChange({ id, toDoStatus }) {
   const [isLoading, setIsLoading] = useState(false);
 
   const handleMarkAsCompleted = async () => {
+    if (status !== "authenticated") {
+      showToast("Please log in to mark a to-do as completed.", "error");
+      return;
+    }
+
     setIsLoading(true);
     const updatedToDo = {
       toDoStatus: toDoStatus === 'Completed' ? 'Pending' : 'Completed',
@@ -31,12 +39,16 @@ export default function ToDoStatusChange({ id, toDoStatus }) {
 
   return (
     <>
-      <Button
-        onPress={onOpen}
-        size="sm"
-        color={toDoStatus === 'Completed' ? "primary" : "success"}
-      >
-        {toDoStatus === 'Completed' ? 'Mark as Pending' : 'Mark as Completed'}
+      <Button onPress={onOpen} size="sm" color={toDoStatus === 'Completed' ? "primary" : "success"}>
+        {toDoStatus === 'Completed' ? (
+          <>
+            <Clock size={16} className="mr-1" /> Mark as Pending
+          </>
+        ) : (
+          <>
+            <CheckCircle size={16} className="mr-1" /> Mark as Completed
+          </>
+        )}
       </Button>
       <Modal isOpen={isOpen} onOpenChange={onOpenChange}>
         <ModalContent>

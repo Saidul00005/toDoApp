@@ -9,8 +9,10 @@ import { useForm } from "react-hook-form";
 import { ErrorMessage } from "@hookform/error-message"
 import { useRouter } from "next/navigation";
 import { useToast } from '@/components/toastMessage/toastContext';
+import { useSession } from "next-auth/react"
 
 const AddNewItemForm = () => {
+  const { status } = useSession()
   const dispatch = useDispatch();
   const router = useRouter();
   const { showToast } = useToast();
@@ -18,6 +20,11 @@ const AddNewItemForm = () => {
   const { register, handleSubmit, reset, formState: { errors, isSubmitting } } = useForm({ criteriaMode: "all" });
 
   const onSubmit = async (data) => {
+    if (status !== "authenticated") {
+      showToast("Please log in to add a to-do.", "error");
+      return;
+    }
+
     const toDoACTUtc = new Date(data.toDoACT).toISOString();
     const toDoItemData = {
       toDoName: data.toDoName,

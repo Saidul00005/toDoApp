@@ -2,6 +2,7 @@ import { getServerSession } from "next-auth/next";
 import { NextResponse } from "next/server";
 import { authOptions } from "@/app/api/auth/[...nextauth]/route";
 
+
 export async function GET(req) {
   try {
     const session = await getServerSession(authOptions);
@@ -12,11 +13,17 @@ export async function GET(req) {
     }
 
     const { searchParams } = new URL(req.url);
-    const page = searchParams.get('page') || 1;
-    const limit = searchParams.get('limit') || 20;
+    const searchQuery = searchParams.get('q')
+
+    if (!searchQuery) {
+      return NextResponse.json(
+        { error: "Search query is required" },
+        { status: 400 }
+      );
+    }
 
     // Fetch the list of todos from your data source (e.g., database or external API)
-    const response = await fetch(`${process.env.BACKEND_URL}/toDoList?page=${page}&limit=${limit}`, {
+    const response = await fetch(`${process.env.BACKEND_URL}/search?q=${encodeURIComponent(searchQuery)}`, {
       method: 'GET',
       headers: {
         'Content-Type': 'application/json',
@@ -24,14 +31,24 @@ export async function GET(req) {
       },
     });
 
+
     if (!response.ok) {
-      return NextResponse.json({ error: 'Failed to fetch todos.' }, { status: response.status });
+      return NextResponse.json(
+        { error: 'Search failed' },
+        { status: response.status }
+      );
     }
 
-    const todos = await response.json();
+    const data = await response.json();
+    return NextResponse.json(
+      { message: 'Search successful', data: data },
+      { status: 200 }
+    );
 
-    return NextResponse.json({ message: 'Fetched successfully.', data: todos }, { status: 200 });
   } catch (error) {
-    return NextResponse.json({ error: 'Error fetching todos.' }, { status: 500 });
+    return NextResponse.json(
+      { error: 'Error performing search.' },
+      { status: 500 }
+    );
   }
 }
