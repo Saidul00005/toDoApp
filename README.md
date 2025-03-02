@@ -3,6 +3,7 @@
 ## Description
 
 This repository contains the codebase for a To-Do Organizer Website. The application allows users to manage their daily tasks effectively, providing functionalities like adding, editing, and deleting tasks.
+It also allows users to manage their completed task and pending tasks in an organized manner.
 
 ## Live Demo
 
@@ -23,10 +24,11 @@ The application's API or backend is currently available at this following link:
 - Delete tasks when no longer needed.
 - Organize and manage tasks by creation date and statuses.
 - Secure user authentication and personalized to-do lists.
+- Email verification before user registration.
 
 ## Technologies Used
 
-- **Frontend**: Next.js with the App Router
+- **Frontend**: Next.js with the App Router, HeroUI
 - **Backend**: Express.js
 - **Database**: MongoDB with Mongoose
 - **Authentication**: NextAuth (JWT-based authentication)
