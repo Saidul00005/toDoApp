@@ -5,12 +5,6 @@
 This repository contains the codebase for a To-Do Organizer Website. The application allows users to manage their daily tasks effectively, providing functionalities like adding, editing, and deleting tasks.
 It also allows users to manage their completed task and pending tasks in an organized manner.
 
-## Live Demo
-
-The application is currently live and can be accessed at this following link:
-
-[Live To-Do App](https://to-do-app-sandy-alpha.vercel.app/addNewItem)
-
 ## Backend
 
 The application's API or backend is currently available at this following link:
@@ -33,6 +27,15 @@ The application's API or backend is currently available at this following link:
 - **Database**: MongoDB with Mongoose
 - **Authentication**: NextAuth (JWT-based authentication)
 - **State Management**: Redux Toolkit
+
+## Technical Overview
+
+- Next.js App Router for client-side routing.
+- Redux Toolkit for state management.
+- Nodemailer for Email verification system.
+- Express.js backend for REST API with CRUD operations and database interaction.
+- NextAuth for secure JWT-based authentication.
+- MongoDB with Mongoose for data persistence and schema validation.
 
 ## Getting Started
 
